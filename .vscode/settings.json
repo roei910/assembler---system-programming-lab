@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "preassembler.h": "c",
+        "compiler.h": "c",
+        "stdio.h": "c"
+    }
+}
