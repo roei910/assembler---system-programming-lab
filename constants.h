@@ -42,21 +42,21 @@ typedef struct{/*binary line*/
         
         struct 
         {
-            unsigned char addressingDest:2;
-            unsigned char dest:4;
-            unsigned char addressingSrc:2;
-            unsigned char src:4;
-            unsigned char funct:4;
-            unsigned char A:4;
+            unsigned int addressingDest:2;
+            unsigned int dest:4;
+            unsigned int addressingSrc:2;
+            unsigned int src:4;
+            unsigned int funct:4;
+            unsigned int A:4;
         }word;
         
         struct 
         {
-            unsigned char E:4;
-            unsigned char D:4;
-            unsigned char C:4;
-            unsigned char B:4;
-            unsigned char A:4;
+            unsigned int E:4;
+            unsigned int D:4;
+            unsigned int C:4;
+            unsigned int B:4;
+            unsigned int A:4;
         }wordPrint;
 
     } machineCode;

@@ -34,9 +34,9 @@ int main(){
     printBinary(binNumber, SIZE_OF_WORD);
     printWord(line);*/
     binLine *lines = (binLine *) malloc(4 * sizeof(binLine));
-    char inputLine[30] = "dec K";
+    char inputLine[30] = "add r3, LIST";
     char command[MAX_COMMAND_NAME_LENGTH], dest[MAX_OPPERAND_LENGTH], src[MAX_OPPERAND_LENGTH];
-    int valid, srcAddressing, destAddresing, destReg, srcReg;
+    int valid, srcAddressing, destAddresing;
     valid = decodeInstructionLine(inputLine, command, src, dest);
     switch (valid)
     {
@@ -49,22 +49,16 @@ int main(){
             printf("valid command - 1 opperand, ");
             valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
             if(valid){
-                /*need to handle addressing to change dest to the right value*/
                 printf("valid opperand\n");
-                /*printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));*/
                 if((destAddresing == 0) || (destAddresing == 3)){
-                    if(destAddresing == 0)
-                        destReg = getNumberFromOpperand(dest);
-                    else
-                        destReg = getRegFromOpperand(dest);
-                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, destReg, destAddresing));
+                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));
                     printWord(*lines);
                     printWord(*(lines+1));
                     if(destAddresing == 0)
                         printWord(*(lines+2));
                 }
                 else{
-                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, destReg, destAddresing));
+                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));
                     printWord(*lines);
                     printWord(*(lines+1));
                     printWord(*(lines+2));
@@ -78,8 +72,14 @@ int main(){
         case 2:
             printf("valid command - 2 opperands, ");
             valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
-            if(valid)
+            if(valid){
                 printf("valid opperands\n");
+                printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 4, src, srcAddressing, dest, destAddresing));
+                printWord(*lines);
+                printWord(*(lines+1));
+                printWord(*(lines+2));
+                printWord(*(lines+3));
+            }
             else
                 printf("opperands do not fit the command\n");
             break;
@@ -412,17 +412,25 @@ int getOpcode(char *command){
 }
 
 int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, ...){
+    int dest, destAddressing, src, srcAddressing;
+    char *destPtr, *srcPtr;
     va_list valist;
     va_start(valist, arguments);
-    int dest, destAddressing, src, srcAddressing;
     switch (arguments)
     {
         case 0:
             createBinaryLine(lines, 2, MACHINE_CODE_A, getOpcode(command));
             return 1;
         case 2:/*arguments: DEST REG, DEST ADDRESSING*/
-            dest = va_arg(valist, int);
+            destPtr = va_arg(valist, char *);
             destAddressing = va_arg(valist, int);
+            if(destAddressing == 0)
+                dest = getNumberFromOpperand(destPtr);
+            else if(destAddressing != 1)
+                dest = getRegFromOpperand(destPtr);
+            else
+                dest = 0;
+            printf("addressing = %d, dest = %d\n", destAddressing, dest);
             createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
             createBinaryLine(lines+1, 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
             if(destAddressing == 0){
@@ -434,12 +442,22 @@ int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, 
             }
             return 2;
         case 4:
-            src = va_arg(valist, int);
+            srcPtr = va_arg(valist, char *);
             srcAddressing = va_arg(valist, int);
-
-            dest = va_arg(valist, int);
+            if(srcAddressing == 0)
+                src = getNumberFromOpperand(srcPtr);
+            else if(srcAddressing != 1)
+                src = getRegFromOpperand(srcPtr);
+            else
+                src = 0;
+            destPtr = va_arg(valist, char *);
             destAddressing = va_arg(valist, int);
-
+            if(destAddressing == 0)
+                dest = getNumberFromOpperand(destPtr);
+            else if(destAddressing != 1)
+                dest = getRegFromOpperand(destPtr);
+            else
+                dest = 0;
             createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
             createBinaryLine(lines+1, 6, MACHINE_CODE_A, getFunct(command), src, srcAddressing, dest, destAddressing);
             /*check how many lines to add*/
@@ -463,4 +481,5 @@ int getRegFromOpperand(char *opperand){
 int writeSymbolLine(binLine *lines, int baseAddress, int offset){
     createBinaryLine(lines, 2, MACHINE_CODE_R, baseAddress);
     createBinaryLine(lines+1, 2, MACHINE_CODE_R, offset);
+    return 1;
 }
