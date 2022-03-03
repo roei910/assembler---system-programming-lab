@@ -33,8 +33,8 @@ int main(){
     numberToBinary(line.machineCode.code, &binNumber, SIZE_OF_WORD);
     printBinary(binNumber, SIZE_OF_WORD);
     printWord(line);*/
-    binLine *lines = (binLine *) malloc(1 * sizeof(binLine));
-    char inputLine[30] = "prn #48";
+    binLine *lines = (binLine *) malloc(4 * sizeof(binLine));
+    char inputLine[30] = "dec K";
     char command[MAX_COMMAND_NAME_LENGTH], dest[MAX_OPPERAND_LENGTH], src[MAX_OPPERAND_LENGTH];
     int valid, srcAddressing, destAddresing, destReg, srcReg;
     valid = decodeInstructionLine(inputLine, command, src, dest);
@@ -64,7 +64,11 @@ int main(){
                         printWord(*(lines+2));
                 }
                 else{
-                    printf("not ready yet!!\n");
+                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, destReg, destAddresing));
+                    printWord(*lines);
+                    printWord(*(lines+1));
+                    printWord(*(lines+2));
+                    printWord(*(lines+3));
                 }
                 
             }
@@ -417,31 +421,35 @@ int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, 
             createBinaryLine(lines, 2, MACHINE_CODE_A, getOpcode(command));
             return 1;
         case 2:/*arguments: DEST REG, DEST ADDRESSING*/
-            /*need to know how many lines to create*/
             dest = va_arg(valist, int);
             destAddressing = va_arg(valist, int);
             createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
-            createBinaryLine(lines+1, 4, MACHINE_CODE_A, getFunct(command), 0, destAddressing);
+            createBinaryLine(lines+1, 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
             if(destAddressing == 0){
                 createBinaryLine(lines+2, 2, MACHINE_CODE_A, dest);
                 return 3;
             }
             if((destAddressing == 1) || (destAddressing == 2)){
-                /*create two more lines from the table*/
-                createBinaryLine(lines+2, 0);
-                createBinaryLine(lines+3, 0);
-                return 4;
+                return 4;/*create two more empty lines*/
             }
             return 2;
-            break;
         case 4:
-            break;
+            src = va_arg(valist, int);
+            srcAddressing = va_arg(valist, int);
+
+            dest = va_arg(valist, int);
+            destAddressing = va_arg(valist, int);
+
+            createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
+            createBinaryLine(lines+1, 6, MACHINE_CODE_A, getFunct(command), src, srcAddressing, dest, destAddressing);
+            /*check how many lines to add*/
+            return 2;
     }
     return 0;
 }
 
 int getNumberFromOpperand(char *opperand){
-    int number;
+    int number=0;
     sscanf(opperand+1, "%d", &number);
     return number;
 }

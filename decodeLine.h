@@ -79,3 +79,4 @@ int buildMachineCodeLines(binLine *, int , char *, int , ...);
 int getNumberFromOpperand(char *);
 int getRegFromOpperand(char *);
 int writeSymbolLine(binLine *, int, int);
+int writeSymbolLine(binLine *, int , int );

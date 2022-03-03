@@ -49,8 +49,6 @@ void createBinaryLine(binLine *line, int numOfArguments, ...){
     va_start(valist, numOfArguments);
     switch (numOfArguments)
     {
-        case 0:/*empty line for symbol*/
-            line->machineCode.code = 0;
         case 2:/*passing indexes: ARE, OPCODE*/
             line->machineCode.code = pow(2, va_arg(valist, int)) + va_arg(valist, int);
             /*printWord(*line);*/
@@ -64,7 +62,7 @@ void createBinaryLine(binLine *line, int numOfArguments, ...){
             line->machineCode.word.addressingDest = va_arg(valist, int);
             /*printWord(*line);*/
             break;
-        case 6:/*passing ARE(index), values: FUNCT, ORIGIN REG, ORIGIN ADDRESSING, DEST REG, DEST ADDRESSING*/
+        case 6:/*passing ARE(index), values: FUNCT, SRC REG, SRC ADDRESSING, DEST REG, DEST ADDRESSING*/
             line->machineCode.code = pow(2, va_arg(valist, int));
             line->machineCode.word.funct = va_arg(valist, int);
             line->machineCode.word.src = va_arg(valist, int);

@@ -39,6 +39,7 @@ typedef struct{/*binary line*/
     unsigned int IC;
     union MachineCode{
         unsigned int code:SIZE_OF_WORD;
+        
         struct 
         {
             unsigned char addressingDest:2;
