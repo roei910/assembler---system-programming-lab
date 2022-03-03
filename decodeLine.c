@@ -33,26 +33,47 @@ int main(){
     numberToBinary(line.machineCode.code, &binNumber, SIZE_OF_WORD);
     printBinary(binNumber, SIZE_OF_WORD);
     printWord(line);*/
-    char inputLine[30] = "red r1";
+    binLine *lines = (binLine *) malloc(1 * sizeof(binLine));
+    char inputLine[30] = "prn #48";
     char command[MAX_COMMAND_NAME_LENGTH], dest[MAX_OPPERAND_LENGTH], src[MAX_OPPERAND_LENGTH];
-    int valid;
+    int valid, srcAddressing, destAddresing, destReg, srcReg;
     valid = decodeInstructionLine(inputLine, command, src, dest);
     switch (valid)
     {
         case 0:
             printf("valid command - no opperands\n");
+            buildMachineCodeLines(lines, 100, command, 0);
+            printWord(*lines);
             break;
         case 1:
             printf("valid command - 1 opperand, ");
-            valid = checkValidCommandOneOpperand(command, dest);
-            if(valid)
+            valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
+            if(valid){
+                /*need to handle addressing to change dest to the right value*/
                 printf("valid opperand\n");
+                /*printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));*/
+                if((destAddresing == 0) || (destAddresing == 3)){
+                    if(destAddresing == 0)
+                        destReg = getNumberFromOpperand(dest);
+                    else
+                        destReg = getRegFromOpperand(dest);
+                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, destReg, destAddresing));
+                    printWord(*lines);
+                    printWord(*(lines+1));
+                    if(destAddresing == 0)
+                        printWord(*(lines+2));
+                }
+                else{
+                    printf("not ready yet!!\n");
+                }
+                
+            }
             else
                 printf("opperand does not fit the command\n");
             break;
         case 2:
             printf("valid command - 2 opperands, ");
-            valid = checkValidCommandTwoOpperands(command, src, dest);
+            valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
             if(valid)
                 printf("valid opperands\n");
             else
@@ -266,15 +287,14 @@ int numberOfOpperands(char *operation){
 /**
  * @brief first group has 2 opperands
  */
-int checkValidCommandTwoOpperands(char *command, char *src, char *dest){
-    int addressingTypeSrc, addressingTypeDest;
-    addressingTypeDest = checkOpperandType(dest);
-    addressingTypeSrc = checkOpperandType(src);
-    if((addressingTypeSrc == 0) || (addressingTypeSrc == 3)){
+int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, char *dest, int *destAddressing){
+    *destAddressing = checkOpperandType(dest);
+    *srcAddressing = checkOpperandType(src);
+    if((*srcAddressing == 0) || (*srcAddressing == 3)){
         if(!strcmp(command, COMMAND_LEA))
             return 0;
     }
-    if(addressingTypeDest == 0){
+    if(*destAddressing == 0){
         if(!strcmp(command, COMMAND_CMP))
             return 1;
         return 0;
@@ -285,21 +305,20 @@ int checkValidCommandTwoOpperands(char *command, char *src, char *dest){
 /**
  * @brief second group has 1 opperand
  */
-int checkValidCommandOneOpperand(char *command, char *dest){
-    int addressingTypeDest;
-    addressingTypeDest = checkOpperandType(dest);
-    if(addressingTypeDest == 0){
+int checkValidCommandOneOpperand(char *command, char *dest, int *destAddressing){
+    *destAddressing = checkOpperandType(dest);
+    if(*destAddressing == 0){
         if(!strcmp(command, COMMAND_PRN))
             return 1;
         return 0;
     }
-    else if(addressingTypeDest == 3){
+    else if(*destAddressing == 3){
         if(((!strcmp(command, COMMAND_JMP))) || (!strcmp(command, COMMAND_BNE)) ||
             (!strcmp(command, COMMAND_JSR)))
             return 0;
         return 1;
     }
-    else if(addressingTypeDest == -1)
+    else if(*destAddressing == -1)
         return 0;
     return 1;
 }
@@ -386,4 +405,54 @@ int getOpcode(char *command){
     if(!strcmp(command, COMMAND_STOP))
         return 15;
     return -1;
+}
+
+int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, ...){
+    va_list valist;
+    va_start(valist, arguments);
+    int dest, destAddressing, src, srcAddressing;
+    switch (arguments)
+    {
+        case 0:
+            createBinaryLine(lines, 2, MACHINE_CODE_A, getOpcode(command));
+            return 1;
+        case 2:/*arguments: DEST REG, DEST ADDRESSING*/
+            /*need to know how many lines to create*/
+            dest = va_arg(valist, int);
+            destAddressing = va_arg(valist, int);
+            createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
+            createBinaryLine(lines+1, 4, MACHINE_CODE_A, getFunct(command), 0, destAddressing);
+            if(destAddressing == 0){
+                createBinaryLine(lines+2, 2, MACHINE_CODE_A, dest);
+                return 3;
+            }
+            if((destAddressing == 1) || (destAddressing == 2)){
+                /*create two more lines from the table*/
+                createBinaryLine(lines+2, 0);
+                createBinaryLine(lines+3, 0);
+                return 4;
+            }
+            return 2;
+            break;
+        case 4:
+            break;
+    }
+    return 0;
+}
+
+int getNumberFromOpperand(char *opperand){
+    int number;
+    sscanf(opperand+1, "%d", &number);
+    return number;
+}
+
+int getRegFromOpperand(char *opperand){
+    char *ptr;
+    ptr = strstr(opperand, REGISTER_R_SYMBOL);
+    return getNumberFromOpperand(ptr);
+}
+
+int writeSymbolLine(binLine *lines, int baseAddress, int offset){
+    createBinaryLine(lines, 2, MACHINE_CODE_R, baseAddress);
+    createBinaryLine(lines+1, 2, MACHINE_CODE_R, offset);
 }

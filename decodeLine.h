@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
+#include <math.h>
 
 #if !defined(CONSTANTS_HEADER)
 #define CONSTANTS_HEADER
@@ -27,6 +29,7 @@
 #define HASHTAG_SYMBOL "#"
 #define LEFT_SQUARE_BRACKET "["
 #define RIGHT_SQUARE_BRACKET "]"
+#define REGISTER_R_SYMBOL "r"
 #define ENTRY_COMMAND ".entry"
 #define EXTERN_COMMAND ".extern"
 #define DATA_COMMAND ".data"
@@ -47,6 +50,9 @@
 #define COMMAND_PRN "prn"
 #define COMMAND_RTS "rts"
 #define COMMAND_STOP "stop"
+#define MACHINE_CODE_A 18
+#define MACHINE_CODE_R 17
+#define MACHINE_CODE_E 16
 
 void lineDecode();
 int isDataLine(char *);
@@ -67,5 +73,9 @@ int isNumber(char *);
 int checkValidOpperandsCommand(char *, char *, char *, char *);
 int getFunct(char *);
 int getOpcode(char *);
-int checkValidCommandTwoOpperands(char *, char *, char *);
-int checkValidCommandOneOpperand(char *, char *);
+int checkValidCommandTwoOpperands(char *,char *,int *,char *,int *);
+int checkValidCommandOneOpperand(char *, char *, int *);
+int buildMachineCodeLines(binLine *, int , char *, int , ...);
+int getNumberFromOpperand(char *);
+int getRegFromOpperand(char *);
+int writeSymbolLine(binLine *, int, int);

@@ -1,5 +1,6 @@
 #include "baseConvertion.h"
 
+/*
 int main(){
     int number = 55;
     int bits = 16;
@@ -12,7 +13,7 @@ int main(){
     createBinaryLine(line, 2, 18, 13);
     createBinaryLine(line, 6, 18, 10, 3, 3, 0, 1);
     return 0;
-}
+}*/
 
 void printBinary(char *bin, int bits){
     int i;
@@ -43,46 +44,34 @@ void numberToBinary(int number, char **bin, int bits){
         cp[i] = (number & 1) ? 1 : 0;
 }
 
-void createBinaryCode(char **bin, int numOfArguments, ...){
-    int numberOfArguments, i;
-    va_list valist;
-    va_start(valist, numOfArguments);
-    
-    for(i = 0 ; i < numOfArguments ; i++)
-        printf("%d. %d\n", i, va_arg(valist, int));
-
-    switch (numberOfArguments)
-    {
-        case 2:/*passing ARE, OPCODE*/
-            
-            break;
-        case 6:/*passing ARE, FUNCT, REG ORIGIN, ORIGIN TYPE, REG DEST, ORIGIN DEST*/
-            
-            break;
-        default:
-            break;
-    }
-    va_end(valist);
-}
-
 void createBinaryLine(binLine *line, int numOfArguments, ...){
-    int i;
     va_list valist;
     va_start(valist, numOfArguments);
     switch (numOfArguments)
     {
+        case 0:/*empty line for symbol*/
+            line->machineCode.code = 0;
         case 2:/*passing indexes: ARE, OPCODE*/
-            line->machineCode.code = pow(2, va_arg(valist, int)) + pow(2, va_arg(valist, int));
-            printWord(*line);
+            line->machineCode.code = pow(2, va_arg(valist, int)) + va_arg(valist, int);
+            /*printWord(*line);*/
             break;
-        case 6:/*passing ARE(index), values: FUNCT, REG ORIGIN, ORIGIN TYPE, REG DEST, ORIGIN DEST*/
+        case 4:/*passing ARE(index), values: FUNCT, DEST REG, DEST ADDRESSING*/
+            line->machineCode.code = pow(2, va_arg(valist, int));
+            line->machineCode.word.funct = va_arg(valist, int);
+            line->machineCode.word.src = 0;
+            line->machineCode.word.addressingSrc = 0;
+            line->machineCode.word.dest = va_arg(valist, int);
+            line->machineCode.word.addressingDest = va_arg(valist, int);
+            /*printWord(*line);*/
+            break;
+        case 6:/*passing ARE(index), values: FUNCT, ORIGIN REG, ORIGIN ADDRESSING, DEST REG, DEST ADDRESSING*/
             line->machineCode.code = pow(2, va_arg(valist, int));
             line->machineCode.word.funct = va_arg(valist, int);
             line->machineCode.word.src = va_arg(valist, int);
             line->machineCode.word.addressingSrc = va_arg(valist, int);
             line->machineCode.word.dest = va_arg(valist, int);
             line->machineCode.word.addressingDest = va_arg(valist, int);
-            printWord(*line);
+            /*printWord(*line);*/
             break;
         default:
             break;

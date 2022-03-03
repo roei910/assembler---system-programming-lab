@@ -7,6 +7,7 @@
 #define MAX_NAME 20
 #define NUMBER_OF_REGISTERS 16
 #define SIZE_OF_WORD 20
+#define MAX_MACHINE_CODE_LINES 8192
 
 /*
 enum opcode{mov=0, cmp, add, sub=add, lea=4,
