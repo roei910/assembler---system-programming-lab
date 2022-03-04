@@ -7,23 +7,19 @@
 #include "decodeLine.h"
 #endif
 
-#if !defined(CONSTANTS_HEADER)
-#define CONSTANTS_HEADER
-#include "constants.h"
-#endif
-
-
-#define DATA_DECLERATION ".data"
-#define STRING_DECLERATION ".string"
-#define EXTERN_DECLERATION ".extern"
-#define ENTRY_DECLERATION ".entry"
-#define MAX_SYMBOL_LENGTH 20
-
 int startFirstRun(FILE *);
+int checkValidSymbol(char *);
 int isSymbolDecleration(char *);
 int isDataDecleration(char *);
 int isExternDecleration(char *);
 int isEntryDecleration(char *);
 int checkDecleration(char *, char *);
 void extractSymbol(char *, char *);
-int checkValidSymbol(char *);
+int isDataLine(char *);
+int isSymbol(char *);
+void addSymbol(symbol *, int, char *, char * ,int, int);
+int addAttribute(symbol *, int, char *, char *);
+int findSymbolInTable(symbol *, int, char *);
+int isExtern(char *);
+int isEntry(char *);
+void printSymbol(symbol *);

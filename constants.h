@@ -8,6 +8,10 @@
 #define NUMBER_OF_REGISTERS 16
 #define SIZE_OF_WORD 20
 #define MAX_MACHINE_CODE_LINES 8192
+#define DATA_DECLERATION ".data"
+#define STRING_DECLERATION ".string"
+#define EXTERN_DECLERATION ".extern"
+#define ENTRY_DECLERATION ".entry"
 
 /*
 enum opcode{mov=0, cmp, add, sub=add, lea=4,
@@ -33,7 +37,7 @@ typedef struct{/*represents a row in the symbol table*/
     int offset;
     int attributeCount;
     char attributes[MAX_ATTRIBUTES][MAX_ATTRIBUTE_NAME_LENGTH];
-} symbol;
+}symbol;
 
 typedef struct{/*binary line*/
     unsigned int IC;

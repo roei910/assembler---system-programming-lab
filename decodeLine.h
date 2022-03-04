@@ -14,8 +14,6 @@
 #include "baseConvertion.h"
 #endif
 
-
-
 #define MAX_OPPERAND_LENGTH 30
 #define MAX_COMMAND_NAME_LENGTH 20
 #define MAX_VARIABLE_NAME_LENGTH 20
@@ -55,27 +53,16 @@
 #define MACHINE_CODE_E 16
 
 int lineDecode(char *, binLine *);
-int isDataLine(char *);
-int isSymbol(char *);
-void addSymbol(symbol *, int , char *, char * ,int , int );
-int addAttribute(symbol *, int , char *, char *);
-int findSymbolInTable(symbol *, int , char *);
-int isExtern(char *);
-int isEntry(char *);
-void printSymbol(symbol *);
-int checkValidSymbol(char *);
 int decodeInstructionLine(char *, char *, char *, char *);
 int checkOpperandType(char *);
-int numberOfOpperands(char *);
+int isNumber(char *);
 int isRegister(char *);
 int isIndexOpperand(char *);
-int isNumber(char *);
+int numberOfOpperands(char *);
+int checkValidCommandTwoOpperands(char *, char *, int *, char *, int *);
+int checkValidCommandOneOpperand(char *, char *, int *);
 int getFunct(char *);
 int getOpcode(char *);
-int checkValidCommandTwoOpperands(char *,char *,int *,char *,int *);
-int checkValidCommandOneOpperand(char *, char *, int *);
-int buildMachineCodeLines(binLine *, int , char *, int , ...);
+int buildMachineCodeLines(binLine *, int, char *, int, ...);
 int getNumberFromOpperand(char *);
 int getRegFromOpperand(char *);
-int writeSymbolLine(binLine *, int, int);
-int writeSymbolLine(binLine *, int , int );
