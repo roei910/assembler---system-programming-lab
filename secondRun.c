@@ -6,3 +6,9 @@ int startSecondRun(FILE *fp){
         
     }
 }
+
+int writeSymbolLine(binLine *lines, int baseAddress, int offset){
+    createBinaryLine(lines, 2, MACHINE_CODE_R, baseAddress);
+    createBinaryLine(lines+1, 2, MACHINE_CODE_R, offset);
+    return 1;
+}

@@ -70,7 +70,6 @@ int numberOfOpperands(char *);
 int isRegister(char *);
 int isIndexOpperand(char *);
 int isNumber(char *);
-int checkValidOpperandsCommand(char *, char *, char *, char *);
 int getFunct(char *);
 int getOpcode(char *);
 int checkValidCommandTwoOpperands(char *,char *,int *,char *,int *);

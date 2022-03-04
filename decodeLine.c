@@ -1,22 +1,5 @@
 #include "decodeLine.h"
-/*
-add symbol:
-int i;
-    symbol *table = (symbol *) malloc(8 * sizeof(symbol));
-    addSymbol(table, 0, "W", "external", 0, 0);
-    addSymbol(table, 1, "MAIN", "code", 96, 4);
-    addAttribute(table, 8, "MAIN", "entry");
-    addSymbol(table, 2, "LOOP", "code", 96, 8);
-    addSymbol(table, 3, "END", "code", 128, 12);
-    addSymbol(table, 4, "STR", "data", 128, 13);
-    addSymbol(table, 5, "LIST", "data", 144, 2);
-    addAttribute(table, 8, "LIST", "entry");
-    addSymbol(table, 6, "K", "data", 149, 5);
-    addAttribute(table, 8, "K", "entry");
-    addSymbol(table, 7, "val1", "external", 0, 0);
-    for(i = 0 ; i < 8 ; i++){
-        printSymbol(table+i);
-    }*/
+
 
 /*
 int main(){
@@ -138,98 +121,6 @@ int lineDecode(char *inputLine, binLine *lines){
             break;
     }
     return 0;
-}
-
-/**
- * @brief return true if the line is .data or .string
- * 
- * @param inputLine 
- * @return int 
- */
-int isDataLine(char *inputLine){
-    if(strstr(inputLine, DATA_COMMAND))
-        return 1;
-    if(strstr(inputLine, STRING_COMMAND))
-        return 1;
-    return 0;
-}
-
-/**
- * @brief return true if the line has a symbol
- * 
- * @param inputLine 
- * @return int 
- */
-int isSymbol(char *inputLine){
-    if(strstr(inputLine, LABEL_SYMBOL))
-        return 1;
-    return 0;
-}
-
-void addSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
-    strcpy((table+index)->symbol, symbolName);
-    (table+index)->baseAddress = base;
-    (table+index)->offset = offset;
-    strcpy(((table+index)->attributes)[0], attr);
-    ((table+index)->attributeCount)++;
-}
-
-int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
-    int index = findSymbolInTable(table, tableSize, symbolName);
-    int attrIndex;
-    if(index == -1){
-        printf("symbol not found\n");
-        return 0;/*symbol not found in table*/
-    }
-    attrIndex = (table+index)->attributeCount;
-    /*printf("index = %d, attrIndex = %d\n", index, attrIndex);*/
-    if(attrIndex >= MAX_ATTRIBUTES)
-        return -1;/*max attribues*/
-    strcpy(((table+index)->attributes)[attrIndex], attr);
-    ((table+index)->attributeCount)++;
-    return 1;
-}
-
-int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
-    int i;
-    for(i = 0 ; i < tableSize ; i++)
-        if(!strcmp((table+i)->symbol, symbolName))
-            return i;
-    return -1;
-}
-
-int isExtern(char *inputLine){
-    if(strstr(inputLine, EXTERN_COMMAND))
-        return 1;
-    return 0;
-}
-
-int isEntry(char *inputLine){
-    if(strstr(inputLine, ENTRY_COMMAND))
-        return 1;
-    return 0;
-}
-
-void printSymbol(symbol *s){
-    int i;
-    printf("{symbol= %s, base= %d, offset= %d, attributes(%d)= ", s->symbol, s->baseAddress, s->offset, s->attributeCount);
-    for(i = 0 ; i < s->attributeCount ; i++)
-        printf("%s, ", s->attributes[i]);
-    printf("}\n");
-}
-
-int checkValidSymbol(char *symbol){
-    int countAlpha = 0;
-    while(*symbol != '\0'){
-        if(!isalnum(*symbol))
-            return 0;
-        if(isalpha(*symbol))
-            countAlpha++;
-        symbol++;
-    }
-    if(!countAlpha)
-        return 0;
-    return 1;
 }
 
 /**
@@ -370,50 +261,6 @@ int checkValidCommandOneOpperand(char *command, char *dest, int *destAddressing)
     return 1;
 }
 
-int checkValidOpperandsCommand(char *inputLine, char *command, char *src, char *dest){
-    /*char src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH], command[MAX_COMMAND_NAME_LENGTH];*/
-    int valid, addressingTypeSrc, addressingTypeDest;
-    valid = decodeInstructionLine(inputLine, command, src, dest);
-    switch (valid)
-    {
-        case -1:/*incorrect number of opps*/
-            return 0;
-        case 0:
-            return 1;
-        case 1:
-            addressingTypeDest = checkOpperandType(dest);
-            if(addressingTypeDest == 0){
-                if(!strcmp(command, COMMAND_PRN))
-                    return 1;
-                return 0;
-            }
-            else if(addressingTypeDest == 3){
-                if(((!strcmp(command, COMMAND_JMP))) || (!strcmp(command, COMMAND_BNE)) ||
-                    (!strcmp(command, COMMAND_JSR)))
-                    return 0;
-                return 1;
-            }
-            else if(addressingTypeDest == -1)
-                return 0;
-            return 1;
-        case 2:
-            addressingTypeDest = checkOpperandType(dest);
-            addressingTypeSrc = checkOpperandType(src);
-            if((addressingTypeSrc == 0) || (addressingTypeSrc == 3)){
-                if(!strcmp(command, COMMAND_LEA))
-                    return 0;
-            }
-            if(addressingTypeDest == 0){
-                if(!strcmp(command, COMMAND_CMP))
-                    return 1;
-                return 0;
-            }
-            return 1;
-        default:/*illegal command name*/
-            return 0;
-    }
-}
-
 int getFunct(char *command){
     if((!strcmp(command, COMMAND_ADD)) || (!strcmp(command, COMMAND_CLR)) ||
         (!strcmp(command, COMMAND_JMP)))
@@ -519,10 +366,4 @@ int getRegFromOpperand(char *opperand){
     char *ptr;
     ptr = strstr(opperand, REGISTER_R_SYMBOL);
     return getNumberFromOpperand(ptr);
-}
-
-int writeSymbolLine(binLine *lines, int baseAddress, int offset){
-    createBinaryLine(lines, 2, MACHINE_CODE_R, baseAddress);
-    createBinaryLine(lines+1, 2, MACHINE_CODE_R, offset);
-    return 1;
 }
