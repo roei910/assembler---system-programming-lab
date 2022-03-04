@@ -13,17 +13,6 @@
 #define EXTERN_DECLERATION ".extern"
 #define ENTRY_DECLERATION ".entry"
 
-/*
-enum opcode{mov=0, cmp, add, sub=add, lea=4,
-            clr, not=clr, inc=clr, dec=clr,
-            jmp=9, bne=jmp, jsr=jmp,
-            red=12, prn, rts, stop};
-
-enum funct{ADD=10,CLR=ADD,JMP=10,
-            SUB=11,NOT=11,BNE=11,
-            INC=12,JSR=INC,DEC=13};
-            */
-
 typedef struct{
     char label[MAX_NAME];
     char commandName[MAX_NAME];
@@ -64,5 +53,4 @@ typedef struct{/*binary line*/
         }wordPrint;
 
     } machineCode;
-    /*unsigned int machineCode:SIZE_OF_WORD;*/
 }binLine;
