@@ -23,15 +23,12 @@
 #define COMMENT_LINE_STRING ";"
 #define INSTRUCTION_LINE_SYMBOL '.'
 #define COMMA_SYMBOL ","
+#define QUOTATION_SYMBOL "\""
 #define LABEL_SYMBOL ":"
 #define HASHTAG_SYMBOL "#"
 #define LEFT_SQUARE_BRACKET "["
 #define RIGHT_SQUARE_BRACKET "]"
 #define REGISTER_R_SYMBOL "r"
-#define ENTRY_COMMAND ".entry"
-#define EXTERN_COMMAND ".extern"
-#define DATA_COMMAND ".data"
-#define STRING_COMMAND ".string"
 #define COMMAND_MOV "mov"
 #define COMMAND_CMP "cmp"
 #define COMMAND_ADD "add"
@@ -48,11 +45,11 @@
 #define COMMAND_PRN "prn"
 #define COMMAND_RTS "rts"
 #define COMMAND_STOP "stop"
-#define MACHINE_CODE_A 18
-#define MACHINE_CODE_R 17
-#define MACHINE_CODE_E 16
+#define MACHINE_CODE_A 2
+#define MACHINE_CODE_R 1
+#define MACHINE_CODE_E 0
 
-int lineDecode(char *, binLine *);
+int lineDecode(char *, binLine *, symbol *, int);
 int decodeInstructionLine(char *, char *, char *, char *);
 int checkOpperandType(char *);
 int isNumber(char *);
@@ -63,7 +60,11 @@ int checkValidCommandTwoOpperands(char *, char *, int *, char *, int *);
 int checkValidCommandOneOpperand(char *, char *, int *);
 int getFunct(char *);
 int getOpcode(char *);
-int buildMachineCodeLines(binLine *, int, char *, int, ...);
+int buildMachineCodeLines(binLine *, int symbolCount, symbol *, char *, int, ...);
 int getNumberFromOpperand(char *);
 int getRegFromOpperand(char *);
 int checkValidSymbol(char *);
+int checkSymbolType(int, symbol *, char *);
+int findSymbolInTable(symbol *, int, char *);
+int isExtern(char *);
+int isEntry(char *);

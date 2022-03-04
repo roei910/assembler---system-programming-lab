@@ -20,44 +20,91 @@ int i;
     }*/
 
 int startFirstRun(FILE *fp){
-    int /*IC = 100, DC = 0, */symbolDecleration, symbolCount = 0, i;
+    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, lineCounter=1, i, addedLines;
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
-    symbol *table = (symbol *)malloc(sizeof(symbol));
+    symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
+    binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
     while(fgets(inputLine, MAX_LINE, fp) != NULL){/*2*/
+        printf("%d. ", lineCounter++);
         symbolDecleration = 0;
-        if(isSymbolDecleration(inputLine))/*3*/
+        if(isSymbolDecleration(inputLine)){/*3*/
+            printf("symbol decleration line");
             symbolDecleration = 1;/*4*/
+        }
         if(isDataDecleration(inputLine)){/*5*/
-            if(symbolDecleration){/*6*/
+            printf(" ; data decleration line");
+            if(symbolDecleration){/*6 - add symbol to table*/
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
                     return 2;
-                for(i = 0 ; i < symbolCount; i++){
-                    if((table+i)->symbol == tempSymbol)
-                        return 1;/*error - symbol already exist*/
+                if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
+                    createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_DECLERATION, 16 * (IC / 16), IC - 16 * (IC / 16));
+                else{
+                    printf("error: symbol already exists\n");
+                    return 2;
                 }
-                table = (symbol *)realloc(table, symbolCount+1 * sizeof(symbol));
-                strcpy((table + (symbolCount))->symbol, tempSymbol);
-                /*add .data to the symbol*/
-                /**/
-                printf("symbol: %s\n", (table+symbolCount)->symbol);
-                symbolCount++;
             }
-            /*7 - add data*/
+            /*7 - add data as bin lines, add DC count according to lines created*/
+            printf("line = %s\n", inputLine);
+            addedLines = extractDataFromLine(inputLine, lines+IC-100, symbolTable);
+            printf("IC = %d\n", IC);
+            for(i = 0 ; i < addedLines ; i++){
+                printf("%04d\t", IC+i);
+                printWord(*(lines+i));
+            }
+            DC += addedLines;
+            IC += addedLines;
         }
         else if(isExternDecleration(inputLine)){/*8*/
+            printf(", extern decleration line");
+            sscanf(inputLine, "%s %s", tempSymbol, tempSymbol);
+            printf("temp symbol = %s\n", tempSymbol);
+            if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
+                return 2;
+            if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
+                createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERN_DECLERATION, 0, 0);
+            else{
+                printf("error: symbol already exists\n");
+                return 2;
+            }
             /*10*/
         }
-        else{/*11*/
-
+        else if((!strstr(inputLine, COMMENT_LINE_STRING)) && (!strstr(inputLine, ENTRY_DECLERATION))){/*11 - normal code line*/
+            printf(", something else");
+            if(symbolDecleration){
+                /*add decleratino with .code*/
+                if(!skipString(inputLine, LABEL_SYMBOL))
+                    printf("error skipping ********************************\n");
+            }
+            /*add bin line*/
+            printf("input line = %s\n", inputLine);
+            addedLines = lineDecode(inputLine, lines+IC-100, symbolTable, symbolCount);
+            printf("IC = %d\n", IC);
+            for(i = 0 ; i < addedLines ; i++){
+                printf("%04d\t", IC+i);
+                printWord(*(lines+i));
+            }
+            IC += addedLines;
+            /*IC++;*/
         }
+        puts("");
     }
+    printf("symbol count = %d\n", symbolCount);
+    for(i = 0 ; i < symbolCount ; i++){
+        printSymbol(symbolTable+i);
+    }
+
+    /*printf("IC = %d\n", IC);
+    for(i = 0 ; i < IC-100 ; i++){
+        printf("%04d\t", i+100);
+        printWord(*(lines+i));
+    }*/
     return 0;
 }
 
 int isSymbolDecleration(char *inputLine){
     char *cPointer;
-    if((cPointer = strstr(inputLine, ":")) != NULL)
+    if((cPointer = strstr(inputLine, LABEL_SYMBOL)) != NULL)
         return 1;
     return 0;
 }
@@ -89,9 +136,9 @@ int checkDecleration(char *inputLine, char *decleration){
 }
 
 void extractSymbol(char *inputLine, char *symbol){
-    char *ptr;
-    char delim[2] = ":";
-    ptr = strtok(inputLine, delim);
+    char *ptr, tempLine[MAX_LINE];
+    strcpy(tempLine, inputLine);
+    ptr = strtok(tempLine, LABEL_SYMBOL);
     strcpy(symbol, ptr);
 }
 
@@ -102,9 +149,15 @@ void extractSymbol(char *inputLine, char *symbol){
  * @return int 
  */
 int isDataLine(char *inputLine){
-    if(strstr(inputLine, DATA_COMMAND))
+    if(strstr(inputLine, DATA_DECLERATION))
         return 1;
-    if(strstr(inputLine, STRING_COMMAND))
+    if(strstr(inputLine, STRING_DECLERATION))
+        return 1;
+    return 0;
+}
+
+int isStringLine(char *inputLine){
+    if(strstr(inputLine, STRING_DECLERATION))
         return 1;
     return 0;
 }
@@ -121,12 +174,12 @@ int isSymbol(char *inputLine){
     return 0;
 }
 
-void addSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
-    strcpy((table+index)->symbol, symbolName);
+void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
+    strcpy((table + (index))->symbol, symbolName);
     (table+index)->baseAddress = base;
     (table+index)->offset = offset;
     strcpy(((table+index)->attributes)[0], attr);
-    ((table+index)->attributeCount)++;
+    ((table+index)->attributeCount) = 1;
 }
 
 int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
@@ -145,31 +198,53 @@ int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
     return 1;
 }
 
-int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
-    int i;
-    for(i = 0 ; i < tableSize ; i++)
-        if(!strcmp((table+i)->symbol, symbolName))
-            return i;
-    return -1;
-}
-
-int isExtern(char *inputLine){
-    if(strstr(inputLine, EXTERN_COMMAND))
-        return 1;
-    return 0;
-}
-
-int isEntry(char *inputLine){
-    if(strstr(inputLine, ENTRY_COMMAND))
-        return 1;
-    return 0;
-}
-
 void printSymbol(symbol *s){
     int i;
     printf("{symbol= %s, base= %d, offset= %d, attributes(%d)= ", s->symbol, s->baseAddress, s->offset, s->attributeCount);
     for(i = 0 ; i < s->attributeCount ; i++)
         printf("%s, ", s->attributes[i]);
     printf("}\n");
+}
+
+int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
+    int tempNumber, countLines = 0;
+    char tempC;
+    char *ptr, tempLine[MAX_LINE];
+    if(isStringLine(inputLine)){/*.string*/
+        strcpy(tempLine, strstr(inputLine, QUOTATION_SYMBOL) + 1);
+        while(*ptr > '\n'){
+            tempC = *(ptr++);
+            if(tempC == '"')
+                tempC = 0;
+            createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, (int)tempC);
+            countLines++;
+        }
+    }
+    else{/*.data*/
+        strcpy(tempLine, strstr(inputLine, DATA_DECLERATION) + 5);
+        ptr = strtok(tempLine, COMMA_SYMBOL);
+        while(ptr){
+            sscanf(ptr, "%d", &tempNumber);
+            ptr = strtok(NULL, COMMA_SYMBOL);
+            createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempNumber);
+            countLines++;
+        }
+    }
+    return countLines;
+}
+
+int skipString(char *firstString, char *secondString){
+    char *ptr;
+    if((ptr = strstr(firstString, secondString))){
+        ptr += strlen(secondString);
+        while((*ptr) == ' '){
+            if(isalnum(*ptr))
+                break;
+            ptr++;
+        }
+        strcpy(firstString, ptr);
+        return 1;
+    }
+    return 0;
 }
 

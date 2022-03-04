@@ -45,16 +45,23 @@ void numberToBinary(int number, char **bin, int bits){
 }
 
 void createBinaryLine(binLine *line, int numOfArguments, ...){
+    int ARE;
     va_list valist;
     va_start(valist, numOfArguments);
     switch (numOfArguments)
     {
         case 2:/*passing indexes: ARE, OPCODE*/
-            line->machineCode.code = pow(2, va_arg(valist, int)) + va_arg(valist, int);
+            /*line->machineCode.code = pow(2, va_arg(valist, int)) + va_arg(valist, int);*/
+            ARE = va_arg(valist, int);
+            printf("aRE = %d\n", ARE);
+            line->machineCode.code = va_arg(valist, int);
+            printf("A = %d, 2^ARE = %f\n", line->machineCode.word.A, pow(2, ARE));
+            line->machineCode.word.A = (int)pow(2, ARE);
+            printf("code = %d\n", line->machineCode.code);
             /*printWord(*line);*/
             break;
         case 4:/*passing ARE(index), values: FUNCT, DEST REG, DEST ADDRESSING*/
-            line->machineCode.code = pow(2, va_arg(valist, int));
+            line->machineCode.word.A = pow(2, va_arg(valist, int));
             line->machineCode.word.funct = va_arg(valist, int);
             line->machineCode.word.src = 0;
             line->machineCode.word.addressingSrc = 0;
@@ -63,7 +70,7 @@ void createBinaryLine(binLine *line, int numOfArguments, ...){
             /*printWord(*line);*/
             break;
         case 6:/*passing ARE(index), values: FUNCT, SRC REG, SRC ADDRESSING, DEST REG, DEST ADDRESSING*/
-            line->machineCode.code = pow(2, va_arg(valist, int));
+            line->machineCode.word.A = pow(2, va_arg(valist, int));
             line->machineCode.word.funct = va_arg(valist, int);
             line->machineCode.word.src = va_arg(valist, int);
             line->machineCode.word.addressingSrc = va_arg(valist, int);

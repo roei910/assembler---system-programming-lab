@@ -63,37 +63,24 @@ int main(){
     return 0;
 }
 */
-int lineDecode(char *inputLine, binLine *lines){
-    int valid, srcAddressing, destAddresing;
+int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolCount){
+    int i;
+    int valid, srcAddressing, destAddresing, linesAdded;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     valid = decodeInstructionLine(inputLine, command, src, dest);
     switch (valid)
     {
         case 0:
             printf("valid command - no opperands\n");
-            buildMachineCodeLines(lines, 100, command, 0);
-            printWord(*lines);
+            buildMachineCodeLines(lines, symbolCount, symbolTable, command, 0);
             return 1;
         case 1:
             printf("valid command - 1 opperand, ");
             valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
             if(valid){
-                printf("valid opperand\n");
-                if((destAddresing == 0) || (destAddresing == 3)){
-                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));
-                    printWord(*lines);
-                    printWord(*(lines+1));
-                    if(destAddresing == 0)
-                        printWord(*(lines+2));
-                }
-                else{
-                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));
-                    printWord(*lines);
-                    printWord(*(lines+1));
-                    printWord(*(lines+2));
-                    printWord(*(lines+3));
-                }
-                return buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing);                
+                printf("valid opperand, dest addressing = %d\n", destAddresing);
+                linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddresing);
+                return linesAdded;                
             }
             else
                 printf("opperand does not fit the command\n");
@@ -103,12 +90,12 @@ int lineDecode(char *inputLine, binLine *lines){
             valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
             if(valid){
                 printf("valid opperands\n");
-                printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 4, src, srcAddressing, dest, destAddresing));
-                printWord(*lines);
-                printWord(*(lines+1));
-                printWord(*(lines+2));
-                printWord(*(lines+3));
-                return buildMachineCodeLines(lines, 100, command, 4, src, srcAddressing, dest, destAddresing);
+                linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddresing);
+                printf("printing lines to check\n");
+                for(i = 0 ; i < linesAdded ; i++){
+                    printWord(*(lines+i));
+                }
+                return linesAdded;
             }
             else
                 printf("opperands do not fit the command\n");
@@ -134,15 +121,30 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
     if(!(countOpp = sscanf(inputLine, "%s %s", command, opperands)))
         return 0;/*couldnt find a command*/
     if(countOpp == 2){/*there is at least 1 opperand*/
-        ptr = strtok(inputLineCpy + strlen(command), COMMA_SYMBOL);
+        ptr = strtok(strstr(inputLineCpy, command) + strlen(command), COMMA_SYMBOL);
         sscanf(ptr, "%s", src);
-        ptr = strtok(NULL, COMMA_SYMBOL);
+        if(ptr != NULL){
+            ptr = strtok(NULL, COMMA_SYMBOL);
+            if(ptr == NULL){
+                strcpy(dest, src);
+                countOpp = 1;
+            }
+            else
+                sscanf(ptr, "%s", dest);
+        }
+        else{
+            strcpy(dest, src);
+            countOpp = 1;
+        }
+
+        /*ptr = strtok(NULL, COMMA_SYMBOL);
+        printf("src = %s, command = %s\n", src, command);
         if(ptr != NULL)
             sscanf(ptr, "%s", dest);
         else{
             strcpy(dest, src);
             countOpp = 1;
-        }
+        }*/
     }
     else
         countOpp = 0;
@@ -187,16 +189,16 @@ int isRegister(char *opperand){
 
 int isIndexOpperand(char *opperand){
     char *ptr;
-    char reg[MAX_NAME], label[MAX_LABEL_LENGTH];
+    char reg[MAX_NAME], label[MAX_LABEL_LENGTH], cpyOpperand[MAX_OPPERAND_LENGTH];
     if((ptr = strstr(opperand, LEFT_SQUARE_BRACKET))){
         sscanf(ptr+1, "%s", reg);/*get register from opperand*/
         ptr = strstr(reg, RIGHT_SQUARE_BRACKET);
         if(ptr != NULL)
             *ptr = '\0';/*replace ] with 0*/
-
-        ptr = strtok(opperand, LEFT_SQUARE_BRACKET);
-        sscanf(ptr, "%s", label);/*get label from opperand*/
         
+        strcpy(cpyOpperand, opperand);
+        ptr = strtok(cpyOpperand, LEFT_SQUARE_BRACKET);
+        sscanf(ptr, "%s", label);/*get label from opperand*/
         if((isRegister(reg) == 1) && (checkValidSymbol(label) == 1))
             return 1;
     }
@@ -301,8 +303,8 @@ int getOpcode(char *command){
     return -1;
 }
 
-int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, ...){
-    int dest, destAddressing, src, srcAddressing;
+int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
+    int dest, destAddressing, src, srcAddressing, symbolType;
     char *destPtr, *srcPtr;
     va_list valist;
     va_start(valist, arguments);
@@ -314,13 +316,14 @@ int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, 
         case 2:/*arguments: DEST REG, DEST ADDRESSING*/
             destPtr = va_arg(valist, char *);
             destAddressing = va_arg(valist, int);
-            if(destAddressing == 0)
+            if(destAddressing == 0){
                 dest = getNumberFromOpperand(destPtr);
-            else if(destAddressing != 1)
+            }
+            else if(destAddressing != 1){
                 dest = getRegFromOpperand(destPtr);
+            }
             else
                 dest = 0;
-            printf("addressing = %d, dest = %d\n", destAddressing, dest);
             createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
             createBinaryLine(lines+1, 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
             if(destAddressing == 0){
@@ -328,6 +331,16 @@ int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, 
                 return 3;
             }
             if((destAddressing == 1) || (destAddressing == 2)){
+                symbolType = checkSymbolType(symbolCount, symbolTable, destPtr);
+                if(symbolType == 1){/*Extern*/
+                    createBinaryLine(lines+2, 2, MACHINE_CODE_E, 0);
+                    createBinaryLine(lines+3, 2, MACHINE_CODE_E, 0);
+                }
+                else{/*entry*/
+                    createBinaryLine(lines+2, 2, MACHINE_CODE_R, 0);
+                    createBinaryLine(lines+3, 2, MACHINE_CODE_R, 0);
+                }
+                
                 return 4;/*create two more empty lines*/
             }
             return 2;
@@ -351,6 +364,22 @@ int buildMachineCodeLines(binLine *lines, int IC, char *command, int arguments, 
             createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
             createBinaryLine(lines+1, 6, MACHINE_CODE_A, getFunct(command), src, srcAddressing, dest, destAddressing);
             /*check how many lines to add*/
+            if((destAddressing == 1) || (destAddressing == 2) || (srcAddressing == 1) || (srcAddressing == 2)){
+                symbolType = checkSymbolType(symbolCount, symbolTable, destPtr);
+                if(symbolType != 1)
+                    symbolType = checkSymbolType(symbolCount, symbolTable, srcPtr);
+                if(symbolType == 1){/*Extern*/
+                    printf("found extern\n");
+                    createBinaryLine(lines+2, 2, MACHINE_CODE_E, 0);
+                    createBinaryLine(lines+3, 2, MACHINE_CODE_E, 0);
+                }
+                else{/*entry*/
+                    printf("found entry\n");
+                    createBinaryLine(lines+2, 2, MACHINE_CODE_R, 0);
+                    createBinaryLine(lines+3, 2, MACHINE_CODE_R, 0);
+                }
+                return 4;/*create two more empty lines*/
+            }
             return 2;
     }
     return 0;
@@ -380,4 +409,36 @@ int checkValidSymbol(char *symbol){
     if(!countAlpha)
         return 0;
     return 1;
+}
+
+int checkSymbolType(int tableSize, symbol *symbolTable, char *symbolName){
+    int index, i;
+    index = findSymbolInTable(symbolTable, tableSize, symbolName);
+    for (i = 0; i < (symbolTable+index)->attributeCount; i++){
+        if(isExtern((symbolTable+index)->attributes[i]))
+            return 1;
+        else if(isEntry((symbolTable+index)->attributes[i]))
+            return 2;
+    }
+    return 0;
+}
+
+int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
+    int i;
+    for(i = 0 ; i < tableSize ; i++)
+        if(!strcmp((table+i)->symbol, symbolName))
+            return i;
+    return -1;
+}
+
+int isExtern(char *inputLine){
+    if(strstr(inputLine, EXTERN_DECLERATION))
+        return 1;
+    return 0;
+}
+
+int isEntry(char *inputLine){
+    if(strstr(inputLine, ENTRY_DECLERATION))
+        return 1;
+    return 0;
 }

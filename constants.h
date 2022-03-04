@@ -12,6 +12,7 @@
 #define STRING_DECLERATION ".string"
 #define EXTERN_DECLERATION ".extern"
 #define ENTRY_DECLERATION ".entry"
+#define MAX_SYMBOLS 50
 
 typedef struct{
     char label[MAX_NAME];
