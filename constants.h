@@ -14,13 +14,6 @@
 #define ENTRY_DECLERATION ".entry"
 #define MAX_SYMBOLS 50
 
-typedef struct{
-    char label[MAX_NAME];
-    char commandName[MAX_NAME];
-    char firstOpperand[MAX_NAME];
-    char secondOpperand[MAX_NAME];
-}Command;
-
 typedef struct{/*represents a row in the symbol table*/
     char symbol[MAX_SYMBOL_LENGTH];
     int baseAddress;
@@ -30,7 +23,6 @@ typedef struct{/*represents a row in the symbol table*/
 }symbol;
 
 typedef struct{/*binary line*/
-    unsigned int IC;
     union MachineCode{
         unsigned int code:SIZE_OF_WORD;
         

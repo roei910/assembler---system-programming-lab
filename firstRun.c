@@ -47,11 +47,6 @@ int startFirstRun(FILE *fp){
             /*7 - add data as bin lines, add DC count according to lines created*/
             printf("line = %s\n", inputLine);
             addedLines = extractDataFromLine(inputLine, lines+IC-100, symbolTable);
-            printf("IC = %d\n", IC);
-            for(i = 0 ; i < addedLines ; i++){
-                printf("%04d\t", IC+i);
-                printWord(*(lines+i));
-            }
             DC += addedLines;
             IC += addedLines;
         }
@@ -76,14 +71,8 @@ int startFirstRun(FILE *fp){
                 if(!skipString(inputLine, LABEL_SYMBOL))
                     printf("error skipping ********************************\n");
             }
-            /*add bin line*/
             printf("input line = %s\n", inputLine);
             addedLines = lineDecode(inputLine, lines+IC-100, symbolTable, symbolCount);
-            printf("IC = %d\n", IC);
-            for(i = 0 ; i < addedLines ; i++){
-                printf("%04d\t", IC+i);
-                printWord(*(lines+i));
-            }
             IC += addedLines;
             /*IC++;*/
         }
@@ -94,11 +83,11 @@ int startFirstRun(FILE *fp){
         printSymbol(symbolTable+i);
     }
 
-    /*printf("IC = %d\n", IC);
+    printf("IC = %d\n", IC);
     for(i = 0 ; i < IC-100 ; i++){
         printf("%04d\t", i+100);
         printWord(*(lines+i));
-    }*/
+    }
     return 0;
 }
 

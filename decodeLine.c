@@ -64,7 +64,6 @@ int main(){
 }
 */
 int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolCount){
-    int i;
     int valid, srcAddressing, destAddresing, linesAdded;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     valid = decodeInstructionLine(inputLine, command, src, dest);
@@ -78,7 +77,7 @@ int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolC
             printf("valid command - 1 opperand, ");
             valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
             if(valid){
-                printf("valid opperand, dest addressing = %d\n", destAddresing);
+                printf("valid opperand, dest addressing = %d, dest = %s\n", destAddresing, dest);
                 linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddresing);
                 return linesAdded;                
             }
@@ -91,10 +90,10 @@ int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolC
             if(valid){
                 printf("valid opperands\n");
                 linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddresing);
-                printf("printing lines to check\n");
+                /*printf("printing lines to check\n");
                 for(i = 0 ; i < linesAdded ; i++){
                     printWord(*(lines+i));
-                }
+                }*/
                 return linesAdded;
             }
             else
@@ -133,18 +132,10 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
                 sscanf(ptr, "%s", dest);
         }
         else{
+            printf("im here!! yes\n");
             strcpy(dest, src);
             countOpp = 1;
         }
-
-        /*ptr = strtok(NULL, COMMA_SYMBOL);
-        printf("src = %s, command = %s\n", src, command);
-        if(ptr != NULL)
-            sscanf(ptr, "%s", dest);
-        else{
-            strcpy(dest, src);
-            countOpp = 1;
-        }*/
     }
     else
         countOpp = 0;
@@ -311,7 +302,8 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
     switch (arguments)
     {
         case 0:
-            createBinaryLine(lines, 2, MACHINE_CODE_A, getOpcode(command));
+            printf("command = %s, opcode = %d\n", command, getOpcode(command));
+            createBinaryLine(lines, 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
             return 1;
         case 2:/*arguments: DEST REG, DEST ADDRESSING*/
             destPtr = va_arg(valist, char *);
@@ -324,7 +316,7 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
             }
             else
                 dest = 0;
-            createBinaryLine(lines, 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
+            createBinaryLine(lines, 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
             createBinaryLine(lines+1, 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
             if(destAddressing == 0){
                 createBinaryLine(lines+2, 2, MACHINE_CODE_A, dest);
@@ -378,6 +370,10 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
                     createBinaryLine(lines+2, 2, MACHINE_CODE_R, 0);
                     createBinaryLine(lines+3, 2, MACHINE_CODE_R, 0);
                 }
+                if(destAddressing == 0){
+                    createBinaryLine(lines+4, 2, MACHINE_CODE_A, dest);
+                    return 5;
+                }
                 return 4;/*create two more empty lines*/
             }
             return 2;
@@ -413,8 +409,10 @@ int checkValidSymbol(char *symbol){
 
 int checkSymbolType(int tableSize, symbol *symbolTable, char *symbolName){
     int index, i;
+    printf("symbol name = %s\n", symbolName);
     index = findSymbolInTable(symbolTable, tableSize, symbolName);
     for (i = 0; i < (symbolTable+index)->attributeCount; i++){
+        printf("here\n");
         if(isExtern((symbolTable+index)->attributes[i]))
             return 1;
         else if(isEntry((symbolTable+index)->attributes[i]))
