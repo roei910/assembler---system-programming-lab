@@ -1,8 +1,7 @@
 #include "decodeLine.h"
-
-int main(){
-    /*
-    int i;
+/*
+add symbol:
+int i;
     symbol *table = (symbol *) malloc(8 * sizeof(symbol));
     addSymbol(table, 0, "W", "external", 0, 0);
     addSymbol(table, 1, "MAIN", "code", 96, 4);
@@ -17,22 +16,10 @@ int main(){
     addSymbol(table, 7, "val1", "external", 0, 0);
     for(i = 0 ; i < 8 ; i++){
         printSymbol(table+i);
-    }
-    */
-    /*char inputLine[30] = "red r1";
-    int x = checkValidOpperandsCommand(inputLine);
-    printf("checking valid opperands: %s = ", inputLine);
-    printf("%d\n", x);*/
+    }*/
 
-    /*
-    binLine line;
-    char *binNumber;
-    line.machineCode.code = 0;
-    line.machineCode.word.A = 4;
-    line.machineCode.code += 4; 
-    numberToBinary(line.machineCode.code, &binNumber, SIZE_OF_WORD);
-    printBinary(binNumber, SIZE_OF_WORD);
-    printWord(line);*/
+/*
+int main(){
     binLine *lines = (binLine *) malloc(4 * sizeof(binLine));
     char inputLine[30] = "add r3, LIST";
     char command[MAX_COMMAND_NAME_LENGTH], dest[MAX_OPPERAND_LENGTH], src[MAX_OPPERAND_LENGTH];
@@ -92,9 +79,65 @@ int main(){
     }
     return 0;
 }
-
-void lineDecode(){
-
+*/
+int lineDecode(char *inputLine, binLine *lines){
+    int valid, srcAddressing, destAddresing;
+    char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
+    valid = decodeInstructionLine(inputLine, command, src, dest);
+    switch (valid)
+    {
+        case 0:
+            printf("valid command - no opperands\n");
+            buildMachineCodeLines(lines, 100, command, 0);
+            printWord(*lines);
+            return 1;
+        case 1:
+            printf("valid command - 1 opperand, ");
+            valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
+            if(valid){
+                printf("valid opperand\n");
+                if((destAddresing == 0) || (destAddresing == 3)){
+                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));
+                    printWord(*lines);
+                    printWord(*(lines+1));
+                    if(destAddresing == 0)
+                        printWord(*(lines+2));
+                }
+                else{
+                    printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing));
+                    printWord(*lines);
+                    printWord(*(lines+1));
+                    printWord(*(lines+2));
+                    printWord(*(lines+3));
+                }
+                return buildMachineCodeLines(lines, 100, command, 2, dest, destAddresing);                
+            }
+            else
+                printf("opperand does not fit the command\n");
+            break;
+        case 2:
+            printf("valid command - 2 opperands, ");
+            valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
+            if(valid){
+                printf("valid opperands\n");
+                printf("%d lines\n", buildMachineCodeLines(lines, 100, command, 4, src, srcAddressing, dest, destAddresing));
+                printWord(*lines);
+                printWord(*(lines+1));
+                printWord(*(lines+2));
+                printWord(*(lines+3));
+                return buildMachineCodeLines(lines, 100, command, 4, src, srcAddressing, dest, destAddresing);
+            }
+            else
+                printf("opperands do not fit the command\n");
+            break;
+        case -1:
+            printf("number of opperands is incorrect\n");
+            break;
+        case -2:
+            printf("illegal command name\n");
+            break;
+    }
+    return 0;
 }
 
 /**

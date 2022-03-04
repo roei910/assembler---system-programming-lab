@@ -54,7 +54,7 @@
 #define MACHINE_CODE_R 17
 #define MACHINE_CODE_E 16
 
-void lineDecode();
+int lineDecode(char *, binLine *);
 int isDataLine(char *);
 int isSymbol(char *);
 void addSymbol(symbol *, int , char *, char * ,int , int );
