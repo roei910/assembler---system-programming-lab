@@ -55,20 +55,6 @@ int startFirstRun(FILE *fp){
     return 0;
 }
 
-int checkValidSymbol(char *symbol){
-    int countAlpha = 0;
-    while(*symbol != '\0'){
-        if(!isalnum(*symbol))
-            return 0;
-        if(isalpha(*symbol))
-            countAlpha++;
-        symbol++;
-    }
-    if(!countAlpha)
-        return 0;
-    return 1;
-}
-
 int isSymbolDecleration(char *inputLine){
     char *cPointer;
     if((cPointer = strstr(inputLine, ":")) != NULL)

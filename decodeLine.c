@@ -367,3 +367,17 @@ int getRegFromOpperand(char *opperand){
     ptr = strstr(opperand, REGISTER_R_SYMBOL);
     return getNumberFromOpperand(ptr);
 }
+
+int checkValidSymbol(char *symbol){
+    int countAlpha = 0;
+    while(*symbol != '\0'){
+        if(!isalnum(*symbol))
+            return 0;
+        if(isalpha(*symbol))
+            countAlpha++;
+        symbol++;
+    }
+    if(!countAlpha)
+        return 0;
+    return 1;
+}

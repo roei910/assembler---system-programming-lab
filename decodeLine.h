@@ -66,3 +66,4 @@ int getOpcode(char *);
 int buildMachineCodeLines(binLine *, int, char *, int, ...);
 int getNumberFromOpperand(char *);
 int getRegFromOpperand(char *);
+int checkValidSymbol(char *);

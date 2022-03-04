@@ -8,7 +8,6 @@
 #endif
 
 int startFirstRun(FILE *);
-int checkValidSymbol(char *);
 int isSymbolDecleration(char *);
 int isDataDecleration(char *);
 int isExternDecleration(char *);
