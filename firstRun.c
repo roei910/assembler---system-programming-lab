@@ -26,26 +26,29 @@ int startFirstRun(FILE *fp){
     binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
     while(fgets(inputLine, MAX_LINE, fp) != NULL){/*2*/
         printf("%d. ", lineCounter++);
+        printf("IC = %d\n", IC);
         symbolDecleration = 0;
         if(isSymbolDecleration(inputLine)){/*3*/
             printf("symbol decleration line");
             symbolDecleration = 1;/*4*/
         }
         if(isDataDecleration(inputLine)){/*5*/
-            printf(" ; data decleration line");
+            printf(", data decleration line");
             if(symbolDecleration){/*6 - add symbol to table*/
                 extractSymbol(inputLine, tempSymbol);
-                if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
+                if(!checkValidSymbol(tempSymbol)){
+                    printf("invalid symbol\n");
                     return 2;
+                }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
-                    createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_DECLERATION, 16 * (IC / 16), IC - 16 * (IC / 16));
+                    createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_ATTRIBUTE, 16 * (IC / 16), IC - (16 * (IC / 16)));
                 else{
                     printf("error: symbol already exists\n");
                     return 2;
                 }
             }
             /*7 - add data as bin lines, add DC count according to lines created*/
-            printf("line = %s\n", inputLine);
+            printf(", line = %s\n", inputLine);
             addedLines = extractDataFromLine(inputLine, lines+IC-100, symbolTable);
             DC += addedLines;
             IC += addedLines;
@@ -53,11 +56,10 @@ int startFirstRun(FILE *fp){
         else if(isExternDecleration(inputLine)){/*8*/
             printf(", extern decleration line");
             sscanf(inputLine, "%s %s", tempSymbol, tempSymbol);
-            printf("temp symbol = %s\n", tempSymbol);
             if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
                 return 2;
             if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
-                createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERN_DECLERATION, 0, 0);
+                createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
             else{
                 printf("error: symbol already exists\n");
                 return 2;
@@ -68,13 +70,23 @@ int startFirstRun(FILE *fp){
             printf(", something else");
             if(symbolDecleration){
                 /*add decleratino with .code*/
+                extractSymbol(inputLine, tempSymbol);
+                if(!checkValidSymbol(tempSymbol)){
+                    printf("invalid symbol\n");
+                    return 2;
+                }
+                if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
+                    createSymbol(symbolTable, symbolCount++, tempSymbol, CODE_ATTRIBUTE, 16 * (IC / 16), IC - 16 * (IC / 16));
+                else{
+                    printf("error: symbol already exists\n");
+                    return 2;
+                }
                 if(!skipString(inputLine, LABEL_SYMBOL))
                     printf("error skipping ********************************\n");
             }
             printf("input line = %s\n", inputLine);
             addedLines = lineDecode(inputLine, lines+IC-100, symbolTable, symbolCount);
             IC += addedLines;
-            /*IC++;*/
         }
         puts("");
     }
@@ -83,8 +95,8 @@ int startFirstRun(FILE *fp){
         printSymbol(symbolTable+i);
     }
 
-    printf("IC = %d\n", IC);
-    for(i = 0 ; i < IC-100 ; i++){
+    printf("IC = %d, DC = %d\n", IC, DC);
+    for(i = 0 ; i < IC+DC-100 ; i++){
         printf("%04d\t", i+100);
         printWord(*(lines+i));
     }
@@ -201,13 +213,15 @@ int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
     char *ptr, tempLine[MAX_LINE];
     if(isStringLine(inputLine)){/*.string*/
         strcpy(tempLine, strstr(inputLine, QUOTATION_SYMBOL) + 1);
-        while(*ptr > '\n'){
+        while((*ptr) != QUOTATION_SYMBOL_CHAR){
             tempC = *(ptr++);
             if(tempC == '"')
                 tempC = 0;
-            createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, (int)tempC);
+            createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempC);
             countLines++;
         }
+        createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, 0);
+            countLines++;
     }
     else{/*.data*/
         strcpy(tempLine, strstr(inputLine, DATA_DECLERATION) + 5);
@@ -237,3 +251,12 @@ int skipString(char *firstString, char *secondString){
     return 0;
 }
 
+int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int symbolCount, int IC, char *attribute){
+    if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
+        createSymbol(symbolTable, symbolCount++, tempSymbol, attribute, 16 * (IC / 16), IC - 16 * (IC / 16));
+    else{
+        printf("error: symbol already exists\n");
+        return 0;
+    }
+    return 1;
+}

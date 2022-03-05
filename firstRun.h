@@ -7,6 +7,8 @@
 #include "decodeLine.h"
 #endif
 
+#define QUOTATION_SYMBOL_CHAR '"'
+
 int startFirstRun(FILE *);
 int isSymbolDecleration(char *);
 int isDataDecleration(char *);
@@ -21,3 +23,4 @@ int addAttribute(symbol *, int, char *, char *);
 void printSymbol(symbol *);
 int extractDataFromLine(char *, binLine *, symbol *);
 int skipString(char *, char *);
+int addSymbolToTable(char *, char *, symbol *, int, int, char *);

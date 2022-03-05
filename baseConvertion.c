@@ -55,7 +55,6 @@ void createBinaryLine(binLine *line, int numOfArguments, ...){
             ARE = va_arg(valist, int);
             line->machineCode.code = va_arg(valist, int);
             line->machineCode.word.A = (unsigned int)pow(2, ARE);
-            printWord(*line);
             break;
         case 4:/*passing ARE(index), values: FUNCT, DEST REG, DEST ADDRESSING*/
             line->machineCode.word.A = (unsigned int)pow(2, va_arg(valist, int));

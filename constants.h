@@ -12,6 +12,10 @@
 #define STRING_DECLERATION ".string"
 #define EXTERN_DECLERATION ".extern"
 #define ENTRY_DECLERATION ".entry"
+#define CODE_ATTRIBUTE "code"
+#define EXTERNAL_ATTRIBUTE "external"
+#define DATA_ATTRIBUTE "data"
+#define ENTRY_ATTRIBUTE "entry"
 #define MAX_SYMBOLS 50
 
 typedef struct{/*represents a row in the symbol table*/
