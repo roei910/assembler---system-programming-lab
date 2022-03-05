@@ -9,7 +9,13 @@ void runProgram(char *fileName){
     strcat(newFileName, ".am");
 
     if((fp = fopen(newFileName, "r"))){ /*open .am file*/
-        startFirstRun(fp);
+        if(!startFirstRun(fp)){
+            printf("Error/s while first run, please check errors\n");
+            exit(0);
+        }
+        else{
+            printf("first run was a success\n");
+        }
         secondRun(fp);/*create start second run inside the secondRun.c*/
         buildOutPutFiles(fp);
         fclose(fp);/*close .am file*/

@@ -7,36 +7,40 @@ int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolC
     switch (valid)
     {
         case 0:
-            printf("valid command - no opperands\n");
+            /*printf("valid command - no opperands\n");*/
             buildMachineCodeLines(lines, symbolCount, symbolTable, command, 0);
             return 1;
         case 1:
-            printf("valid command - 1 opperand, ");
+            /*printf("valid command - 1 opperand, ");*/
             valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
             if(valid){
-                printf("valid opperand, dest addressing = %d, dest = %s\n", destAddresing, dest);
+                /*printf("valid opperand, dest addressing = %d, dest = %s\n", destAddresing, dest);*/
                 linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddresing);
                 return linesAdded;                
             }
             else
-                printf("opperand does not fit the command\n");
+                fprintf(stderr, "[ERROR]: opperand does not fit the command: \"%s, %s\"\n", command, dest);
             break;
         case 2:
-            printf("valid command - 2 opperands, ");
+            /*printf("valid command - 2 opperands, ");*/
             valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
-            if(valid){
-                printf("valid opperands\n");
+            if(!valid){
+                /*printf("valid opperands\n");*/
                 linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddresing);
                 return linesAdded;
             }
-            else
-                printf("opperands do not fit the command\n");
+            else{
+                if(valid == 1)
+                    fprintf(stderr, "[ERROR]: source opperand does not fit the command: \"%s, %s\"\n", command, src);
+                else
+                    fprintf(stderr, "[ERROR]: destination opperand does not fit the command: \"%s, %s\"\n", command, dest);
+            }
             break;
         case -1:
-            printf("number of opperands is incorrect\n");
+            fprintf(stderr, "[ERROR]: number of opperands is incorrect: \"%s\", number of opperands should be %d\n", command, numberOfOpperands(command));
             break;
         case -2:
-            printf("illegal command name\n");
+            fprintf(stderr, "[ERROR]: illegal command name: \"%s\"\n", command);
             break;
     }
     return 0;
@@ -151,14 +155,13 @@ int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, 
     *srcAddressing = checkOpperandType(src);
     if((*srcAddressing == 0) || (*srcAddressing == 3)){
         if(!strcmp(command, COMMAND_LEA))
-            return 0;
+            return 1;
     }
     if(*destAddressing == 0){
-        if(!strcmp(command, COMMAND_CMP))
-            return 1;
-        return 0;
+        if(strcmp(command, COMMAND_CMP))
+            return 2;
     }
-    return 1;
+    return 0;
 }
 
 /**

@@ -20,84 +20,86 @@ int i;
     }*/
 
 int startFirstRun(FILE *fp){
-    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, /*lineCounter=1, i,*/ addedLines, error = 1;
+    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, lineCounter=1, i, addedLines;
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
     binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
     while(fgets(inputLine, MAX_LINE, fp) != NULL){/*2*/
-        /*printf("%d. IC = %d\n", lineCounter++, IC);*/
+        printf("%d. ", lineCounter++);
+        printf("IC = %d\n", IC);
         symbolDecleration = 0;
         if(isSymbolDecleration(inputLine)){/*3*/
-            /*printf("symbol decleration line");*/
+            printf("symbol decleration line");
             symbolDecleration = 1;/*4*/
         }
         if(isDataDecleration(inputLine)){/*5*/
-            /*printf(", data decleration line");*/
+            printf(", data decleration line");
             if(symbolDecleration){/*6 - add symbol to table*/
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: invalid symbol \"%s\"\n", tempSymbol);
-                    error = 0;
+                    printf("invalid symbol\n");
+                    return 2;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_ATTRIBUTE, 16 * (IC / 16), IC - (16 * (IC / 16)));
                 else{
-                    fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
-                    error = 0;
+                    printf("error: symbol already exists\n");
+                    return 2;
                 }
             }
             /*7 - add data as bin lines, add DC count according to lines created*/
-            /*printf(", line = %s\n", inputLine);*/
+            printf(", line = %s\n", inputLine);
             addedLines = extractDataFromLine(inputLine, lines+IC-100, symbolTable);
             DC += addedLines;
             IC += addedLines;
         }
         else if(isExternDecleration(inputLine)){/*8*/
-            /*printf(", extern decleration line");*/
+            printf(", extern decleration line");
             sscanf(inputLine, "%s %s", tempSymbol, tempSymbol);
             if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
-                error = 0;
+                return 2;
             if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                 createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
             else{
-                fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
-                error = 0;
+                printf("error: symbol already exists\n");
+                return 2;
             }
             /*10*/
         }
         else if((!strstr(inputLine, COMMENT_LINE_STRING)) && (!strstr(inputLine, ENTRY_DECLERATION))){/*11 - normal code line*/
-            /*printf(", something else");*/
+            printf(", something else");
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: invalid symbol \"%s\"\n", tempSymbol);
-                    error = 0;
+                    printf("invalid symbol\n");
+                    return 2;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, CODE_ATTRIBUTE, 16 * (IC / 16), IC - 16 * (IC / 16));
                 else{
-                    fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
-                    error = 0;
+                    printf("error: symbol already exists\n");
+                    return 2;
                 }
-                skipString(inputLine, LABEL_SYMBOL);
+                if(!skipString(inputLine, LABEL_SYMBOL))
+                    printf("error skipping ********************************\n");
             }
-            /*printf("input line = %s\n", inputLine);*/
+            printf("input line = %s\n", inputLine);
             addedLines = lineDecode(inputLine, lines+IC-100, symbolTable, symbolCount);
             IC += addedLines;
         }
-        /*puts("");*/
+        puts("");
     }
-    /*printf("symbol count = %d\n", symbolCount);
+    printf("symbol count = %d\n", symbolCount);
     for(i = 0 ; i < symbolCount ; i++){
         printSymbol(symbolTable+i);
     }
 
     printf("IC = %d, DC = %d\n", IC, DC);
-    for(i = 0 ; i < IC-100 ; i++){
+    for(i = 0 ; i < IC+DC-100 ; i++){
         printf("%04d\t", i+100);
         printWord(*(lines+i));
-    }*/
-    return error;
+    }
+    return 0;
 }
 
 int isSymbolDecleration(char *inputLine){
