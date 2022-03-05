@@ -2,7 +2,7 @@
 
 int startSecondRun(FILE *fp, symbol *symbolTable, binLine *lines, int tableSize){
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
-    int error = 1;
+    int error = 1, linesCounter = 0;
     rewind(fp);
     while(fgets(inputLine, MAX_LINE, fp) != NULL){
         if(isSymbolDecleration(inputLine))
@@ -14,9 +14,11 @@ int startSecondRun(FILE *fp, symbol *symbolTable, binLine *lines, int tableSize)
                 error = 0;
                 fprintf(stderr, "[ERROR]: couldn't extract symbol from entry line\n");
             }        
+            linesCounter++;
         }
         else if((!isDataDecleration(inputLine)) && (!isExternDecleration(inputLine)) && (!strstr(inputLine, COMMENT_LINE_STRING))){
             /*printf("there is a normal line, need to complete the binary line\n");*/
+            
         }
     }
     return error;
@@ -54,3 +56,4 @@ int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
 int extractSymbolFromEntryLine(char *inputLine, char *tempSymbol){
     return sscanf(strstr(inputLine, ENTRY_DECLERATION) + strlen(ENTRY_DECLERATION), "%s", tempSymbol);
 }
+

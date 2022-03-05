@@ -85,16 +85,6 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
         }
         /*puts("");*/
     }
-    /*printf("symbol count = %d\n", symbolCount);
-    for(i = 0 ; i < symbolCount ; i++){
-        printSymbol(symbolTable+i);
-    }
-
-    printf("IC = %d, DC = %d\n", IC, DC);
-    for(i = 0 ; i < IC-100 ; i++){
-        printf("%04d\t", i+100);
-        printWord(*(lines+i));
-    }*/
     *ICF = IC;
     *DCF = DC;
     *tableSize = symbolCount;
