@@ -19,11 +19,9 @@ int i;
         printSymbol(table+i);
     }*/
 
-int startFirstRun(FILE *fp){
+int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *DCF, int *tableSize){
     int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, /*lineCounter=1, i,*/ addedLines, error = 1;
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
-    symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
-    binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
     while(fgets(inputLine, MAX_LINE, fp) != NULL){/*2*/
         /*printf("%d. IC = %d\n", lineCounter++, IC);*/
         symbolDecleration = 0;
@@ -79,7 +77,7 @@ int startFirstRun(FILE *fp){
                     fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
                     error = 0;
                 }
-                skipString(inputLine, LABEL_SYMBOL);
+                skipSymbol(inputLine);
             }
             /*printf("input line = %s\n", inputLine);*/
             addedLines = lineDecode(inputLine, lines+IC-100, symbolTable, symbolCount);
@@ -97,47 +95,10 @@ int startFirstRun(FILE *fp){
         printf("%04d\t", i+100);
         printWord(*(lines+i));
     }*/
+    *ICF = IC;
+    *DCF = DC;
+    *tableSize = symbolCount;
     return error;
-}
-
-int isSymbolDecleration(char *inputLine){
-    char *cPointer;
-    if((cPointer = strstr(inputLine, LABEL_SYMBOL)) != NULL)
-        return 1;
-    return 0;
-}
-
-int isDataDecleration(char *inputLine){
-    if(checkDecleration(inputLine, DATA_DECLERATION))
-        return 1;
-    else if(checkDecleration(inputLine, STRING_DECLERATION))
-        return 1;
-    return 0;
-}
-
-int isExternDecleration(char *inputLine){
-    if(checkDecleration(inputLine, EXTERN_DECLERATION))
-        return 1;
-    return 0;
-}
-
-int isEntryDecleration(char *inputLine){
-    if(checkDecleration(inputLine, ENTRY_DECLERATION))
-        return 1;
-    return 0;
-}
-
-int checkDecleration(char *inputLine, char *decleration){
-    if(strstr(inputLine, decleration) != NULL)
-        return 1;
-    return 0;
-}
-
-void extractSymbol(char *inputLine, char *symbol){
-    char *ptr, tempLine[MAX_LINE];
-    strcpy(tempLine, inputLine);
-    ptr = strtok(tempLine, LABEL_SYMBOL);
-    strcpy(symbol, ptr);
 }
 
 /**
@@ -180,27 +141,12 @@ void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int ba
     ((table+index)->attributeCount) = 1;
 }
 
-int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
-    int index = findSymbolInTable(table, tableSize, symbolName);
-    int attrIndex;
-    if(index == -1){
-        printf("symbol not found\n");
-        return 0;/*symbol not found in table*/
-    }
-    attrIndex = (table+index)->attributeCount;
-    /*printf("index = %d, attrIndex = %d\n", index, attrIndex);*/
-    if(attrIndex >= MAX_ATTRIBUTES)
-        return -1;/*max attribues*/
-    strcpy(((table+index)->attributes)[attrIndex], attr);
-    ((table+index)->attributeCount)++;
-    return 1;
-}
-
 void printSymbol(symbol *s){
     int i;
     printf("{symbol= %s, base= %d, offset= %d, attributes(%d)= ", s->symbol, s->baseAddress, s->offset, s->attributeCount);
-    for(i = 0 ; i < s->attributeCount ; i++)
+    for(i = 0 ; i < (s->attributeCount)-1 ; i++)
         printf("%s, ", s->attributes[i]);
+    printf("%s", s->attributes[s->attributeCount-1]);
     printf("}\n");
 }
 
@@ -233,21 +179,6 @@ int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
     return countLines;
 }
 
-int skipString(char *firstString, char *secondString){
-    char *ptr;
-    if((ptr = strstr(firstString, secondString))){
-        ptr += strlen(secondString);
-        while((*ptr) == ' '){
-            if(isalnum(*ptr))
-                break;
-            ptr++;
-        }
-        strcpy(firstString, ptr);
-        return 1;
-    }
-    return 0;
-}
-
 int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int symbolCount, int IC, char *attribute){
     if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
         createSymbol(symbolTable, symbolCount++, tempSymbol, attribute, 16 * (IC / 16), IC - 16 * (IC / 16));
@@ -256,4 +187,11 @@ int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int
         return 0;
     }
     return 1;
+}
+
+void extractSymbol(char *inputLine, char *symbol){
+    char *ptr, tempLine[MAX_LINE];
+    strcpy(tempLine, inputLine);
+    ptr = strtok(tempLine, LABEL_SYMBOL);
+    strcpy(symbol, ptr);
 }

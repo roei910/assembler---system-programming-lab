@@ -68,3 +68,8 @@ int checkSymbolType(int, symbol *, char *);
 int findSymbolInTable(symbol *, int, char *);
 int isExtern(char *);
 int isEntry(char *);
+int checkDecleration(char *, char *);
+int skipSymbol(char *);
+int isSymbolDecleration(char *);
+int isDataDecleration(char *);
+int isExternDecleration(char *);

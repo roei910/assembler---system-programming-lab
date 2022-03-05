@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "preCompiler.h"
 #include "firstRun.h"
+#include "secondRun.h"
 
 void runProgram(char *);
 void preCompiler(char *);
-void secondRun(FILE *);
-void buildOutPutFiles(FILE *);
+void buildOutPutFiles(binLine *, symbol *, int, int);
+
 

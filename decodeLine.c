@@ -346,3 +346,45 @@ int isEntry(char *inputLine){
         return 1;
     return 0;
 }
+
+int checkDecleration(char *inputLine, char *decleration){
+    if(strstr(inputLine, decleration) != NULL)
+        return 1;
+    return 0;
+}
+
+int skipSymbol(char *inputLine){
+    char *ptr;
+    if((ptr = strstr(inputLine, LABEL_SYMBOL))){
+        ptr += strlen(LABEL_SYMBOL);
+        while((*ptr) == ' '){
+            if(isalnum(*ptr))
+                break;
+            ptr++;
+        }
+        strcpy(inputLine, ptr);
+        return 1;
+    }
+    return 0;
+}
+
+int isSymbolDecleration(char *inputLine){
+    char *cPointer;
+    if((cPointer = strstr(inputLine, LABEL_SYMBOL)) != NULL)
+        return 1;
+    return 0;
+}
+
+int isDataDecleration(char *inputLine){
+    if(checkDecleration(inputLine, DATA_DECLERATION))
+        return 1;
+    else if(checkDecleration(inputLine, STRING_DECLERATION))
+        return 1;
+    return 0;
+}
+
+int isExternDecleration(char *inputLine){
+    if(checkDecleration(inputLine, EXTERN_DECLERATION))
+        return 1;
+    return 0;
+}
