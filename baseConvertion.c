@@ -23,8 +23,8 @@ void printBinary(char *bin, int bits){
     printf("\n");
 }
 
-void printWord(binLine line){
-    printf("A%x-B%x-C%x-D%x-E%x\n", line.machineCode.wordPrint.A, line.machineCode.wordPrint.B,
+void printWord(FILE *fp, binLine line){
+    fprintf(fp, "A%x-B%x-C%x-D%x-E%x\n", line.machineCode.wordPrint.A, line.machineCode.wordPrint.B,
         line.machineCode.wordPrint.C, line.machineCode.wordPrint.D, line.machineCode.wordPrint.E);
 }
 

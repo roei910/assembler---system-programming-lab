@@ -1,10 +1,10 @@
 #include "secondRun.h"
 
-int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, int tableSize){
+int startSecondRun(FILE *fp, symbol *symbolTable, binLine *lines, int tableSize){
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     int srcAddressing, destAddressing, numberOfOpperands;
-    int error = 1, linesCounter = 0, commandLines = 0/*, symbolIndex*/;
+    int error = 1, linesCounter = 0, commandLines = 0, symbolIndex;
     rewind(fp);
     while(fgets(inputLine, MAX_LINE, fp) != NULL){
         if(isSymbolDecleration(inputLine))
@@ -20,6 +20,7 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
         else if((!isDataDecleration(inputLine)) && (!isExternDecleration(inputLine)) && (!strstr(inputLine, COMMENT_LINE_STRING))){
             /*printf("there is a normal line, need to complete the binary line\n");*/
             commandLines = lineDecode(inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
+            printf("command = %s, src = %s, dest = %s\n", command, src, dest);
             switch (numberOfOpperands)
             {
                 case 1:
@@ -27,7 +28,16 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
                     if(destAddressing == 0)
                         linesCounter++;
                     if(((destAddressing) == 1) || ((destAddressing) == 2)){/**/
-                        buildSymbolLines(extFp, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter);
+                        getSymbolFromOpperand(dest, tempSymbol);
+                        symbolIndex = findSymbolInTable(symbolTable, tableSize, tempSymbol);
+                        if(symbolIndex == -1){
+                            error = 0;
+                            fprintf(stderr, "[ERROR]: couldn't find symbol \"%s\" in the symbol table\n", tempSymbol);
+                        }
+                        if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE))
+                            buildSymbolLines(lines+linesCounter, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
+                        else
+                            buildSymbolLines(lines+linesCounter, MACHINE_CODE_R, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
                         linesCounter+=2;
                     }
                     break;
@@ -36,13 +46,31 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
                     if(srcAddressing == 0)
                         linesCounter++;
                     if((srcAddressing == 1) || (srcAddressing == 2)){
-                        buildSymbolLines(extFp, lines+linesCounter, symbolTable, tableSize, src, 100+linesCounter);
+                        getSymbolFromOpperand(src, tempSymbol);
+                        symbolIndex = findSymbolInTable(symbolTable, tableSize, tempSymbol);
+                        if(symbolIndex == -1){
+                            error = 0;
+                            fprintf(stderr, "[ERROR]: couldn't find symbol \"%s\" in the symbol table\n", tempSymbol);
+                        }
+                        if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE))
+                            buildSymbolLines(lines+linesCounter, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
+                        else
+                            buildSymbolLines(lines+linesCounter, MACHINE_CODE_R, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
                         linesCounter+=2;
                     }
                     if(destAddressing == 0)
                         linesCounter++;
                     if(((destAddressing) == 1) || ((destAddressing) == 2)){/**/
-                        buildSymbolLines(extFp, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter);
+                        getSymbolFromOpperand(dest, tempSymbol);
+                        symbolIndex = findSymbolInTable(symbolTable, tableSize, tempSymbol);
+                        if(symbolIndex == -1){
+                            error = 0;
+                            fprintf(stderr, "[ERROR]: couldn't find symbol \"%s\" in the symbol table\n", tempSymbol);
+                        }
+                        if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE))
+                            buildSymbolLines(lines+linesCounter, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
+                        else
+                            buildSymbolLines(lines+linesCounter, MACHINE_CODE_R, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
                         linesCounter+=2;
                     }
                     break;
@@ -53,6 +81,12 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
         }
     }
     return error;
+}
+
+int writeSymbolLine(binLine *lines, int baseAddress, int offset){
+    createBinaryLine(lines, 2, MACHINE_CODE_R, baseAddress);
+    createBinaryLine(lines+1, 2, MACHINE_CODE_R, offset);
+    return 1;
 }
 
 int isEntryDecleration(char *inputLine){
@@ -70,6 +104,7 @@ int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
         return 0;/*symbol not found in table*/
     }
     attrIndex = (table+index)->attributeCount;
+    /*printf("index = %d, attrIndex = %d\n", index, attrIndex);*/
     if(attrIndex >= MAX_ATTRIBUTES)
         return -1;/*max attribues*/
     strcpy(((table+index)->attributes)[attrIndex], attr);
@@ -91,7 +126,12 @@ void getSymbolFromOpperand(char *opperand, char *tempSymbol){
         sscanf(opperand, "%s", tempSymbol);
 }
 
-int buildSymbolLines(FILE *fp, binLine *lines, symbol *symbolTable, int tableSize, char *opperand, int IC){
+void buildSymbolLines(binLine *lines, int ARE, int baseAddress, int offset){
+    createBinaryLine(lines, 2, ARE, baseAddress);
+    createBinaryLine(lines+1, 2, ARE, offset);
+}
+
+int secondBuildSymbolLines(binLine *lines, symbol *symbolTable, int tableSize, char *opperand){
     int symbolIndex, error = 1;
     char tempSymbol[MAX_SYMBOL_LENGTH];
     getSymbolFromOpperand(opperand, tempSymbol);
@@ -100,19 +140,9 @@ int buildSymbolLines(FILE *fp, binLine *lines, symbol *symbolTable, int tableSiz
         error = 0;
         fprintf(stderr, "[ERROR]: couldn't find symbol \"%s\" in the symbol table\n", tempSymbol);
     }
-    if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE)){
-        createBinaryLine(lines, 2, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress);
-        createBinaryLine(lines+1, 2, MACHINE_CODE_E, (symbolTable+symbolIndex)->offset);
-        printSymbolExternal(fp, symbolTable+symbolIndex, IC);
-    }
-    else{
-        createBinaryLine(lines, 2, MACHINE_CODE_R, (symbolTable+symbolIndex)->baseAddress);
-        createBinaryLine(lines+1, 2, MACHINE_CODE_R, (symbolTable+symbolIndex)->offset);
-    }
+    if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE))
+        buildSymbolLines(lines, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
+    else
+        buildSymbolLines(lines, MACHINE_CODE_R, (symbolTable+symbolIndex)->baseAddress, (symbolTable+symbolIndex)->offset);
     return error;             
-}
-
-void printSymbolExternal(FILE *fp, symbol *extSymbol, int baseAddress){
-    fprintf(fp, "%s BASE %d\n", extSymbol->symbol, baseAddress);
-    fprintf(fp, "%s OFFSET %d\n\n", extSymbol->symbol, baseAddress+1);
 }

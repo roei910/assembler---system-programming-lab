@@ -20,17 +20,16 @@ int i;
     }*/
 
 int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *DCF, int *tableSize){
-    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, /*lineCounter=1, i,*/ addedLines, error = 1;
+    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1;
+    int srcAddressing, destAddressing, numberOfOpperands;
+    char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     while(fgets(inputLine, MAX_LINE, fp) != NULL){/*2*/
-        /*printf("%d. IC = %d\n", lineCounter++, IC);*/
         symbolDecleration = 0;
         if(isSymbolDecleration(inputLine)){/*3*/
-            /*printf("symbol decleration line");*/
             symbolDecleration = 1;/*4*/
         }
         if(isDataDecleration(inputLine)){/*5*/
-            /*printf(", data decleration line");*/
             if(symbolDecleration){/*6 - add symbol to table*/
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
@@ -45,13 +44,11 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
                 }
             }
             /*7 - add data as bin lines, add DC count according to lines created*/
-            /*printf(", line = %s\n", inputLine);*/
             addedLines = extractDataFromLine(inputLine, lines+IC-100, symbolTable);
             DC += addedLines;
             IC += addedLines;
         }
         else if(isExternDecleration(inputLine)){/*8*/
-            /*printf(", extern decleration line");*/
             sscanf(inputLine, "%s %s", tempSymbol, tempSymbol);
             if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
                 error = 0;
@@ -64,7 +61,6 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
             /*10*/
         }
         else if((!strstr(inputLine, COMMENT_LINE_STRING)) && (!strstr(inputLine, ENTRY_DECLERATION))){/*11 - normal code line*/
-            /*printf(", something else");*/
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
@@ -79,11 +75,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
                 }
                 skipSymbol(inputLine);
             }
-            /*printf("input line = %s\n", inputLine);*/
-            addedLines = lineDecode(inputLine, lines+IC-100, symbolTable, symbolCount);
+            addedLines = lineDecode(inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
+            if(!buildCodeLines(numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
+                fprintf(stderr, "[ERROR]: code lines were not built, command: \"%s\"\n", command);
+                error = 0;
+            }
             IC += addedLines;
         }
-        /*puts("");*/
     }
     *ICF = IC;
     *DCF = DC;
@@ -177,6 +175,20 @@ int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int
         return 0;
     }
     return 1;
+}
+
+int buildCodeLines(int numberOfOpperands, binLine *lines, symbol *symbolTable, int symbolCount,
+    char *command, char *src, int srcAddressing, char *dest, int destAddressing){
+    switch (numberOfOpperands)
+    {
+        case 0:
+            return buildMachineCodeLines(lines, symbolCount, symbolTable, command, 0);
+        case 1:
+            return buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddressing);
+        case 2:
+            return buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddressing);
+    }
+    return 0;
 }
 
 void extractSymbol(char *inputLine, char *symbol){

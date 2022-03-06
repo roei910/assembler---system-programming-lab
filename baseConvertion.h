@@ -13,5 +13,5 @@
 void printBinary(char *, int);
 int binaryToNumber(char *, int );
 void numberToBinary(int, char **, int);
-void printWord(binLine);
+void printWord(FILE *, binLine);
 void createBinaryLine(binLine *, int, ...);

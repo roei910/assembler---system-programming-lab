@@ -5,8 +5,11 @@
 #include "decodeLine.h"
 #endif
 
-int startSecondRun(FILE *, symbol *, binLine *, int);
-int writeSymbolLine(binLine *, int, int);
+int startSecondRun(FILE *, FILE *, symbol *, binLine *, int);
 int isEntryDecleration(char *);
 int addAttribute(symbol *, int, char *, char *);
 int extractSymbolFromEntryLine(char *, char *);
+void getSymbolFromOpperand(char *, char *);
+/*void buildSymbolLines(binLine *, int, int, int);*/
+int buildSymbolLines(FILE *, binLine *, symbol *, int , char *, int);
+void printSymbolExternal(FILE *, symbol *, int);

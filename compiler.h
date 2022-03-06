@@ -5,6 +5,5 @@
 
 void runProgram(char *);
 void preCompiler(char *);
-void buildOutPutFiles(binLine *, symbol *, int, int);
-
-
+void buildOutPutFiles(char *, binLine *, symbol *, int, int, int);
+void printSymbolEntry(FILE *, symbol *, int);

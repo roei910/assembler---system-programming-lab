@@ -16,4 +16,5 @@ void createSymbol(symbol *, int, char *, char * ,int, int);
 void printSymbol(symbol *);
 int extractDataFromLine(char *, binLine *, symbol *);
 int addSymbolToTable(char *, char *, symbol *, int, int, char *);
+int buildCodeLines(int, binLine *, symbol *, int, char *, char *, int, char *, int);
 void extractSymbol(char *, char *);

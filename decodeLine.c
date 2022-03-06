@@ -1,5 +1,55 @@
 #include "decodeLine.h"
 
+int lineDecode(char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
+    int valid, linesAdded = 0;
+    *numberOfOpperands = decodeInstructionLine(inputLine, command, src, dest);
+    switch (*numberOfOpperands)
+    {
+        case 0:
+            return ++linesAdded;
+        case 1:
+            valid = checkValidCommandOneOpperand(command, dest, destAddressing);
+            if(valid){
+                if(*destAddressing == 0)
+                    linesAdded++;
+                if((*destAddressing == 1) || (*destAddressing == 2))
+                    linesAdded+=2;
+                return linesAdded+=2;                
+            }
+            else
+                fprintf(stderr, "[ERROR]: opperand does not fit the command: \"%s, %s\"\n", command, dest);
+        case 2:
+            valid = checkValidCommandTwoOpperands(command, src, srcAddressing, dest, destAddressing);
+            if(!valid){
+                if(*srcAddressing == 0)
+                    linesAdded++;
+                else if((*srcAddressing == 1) || (*srcAddressing == 2))
+                    linesAdded+=2;
+                if(*destAddressing == 0)
+                    linesAdded++;
+                else if((*destAddressing == 1) || (*destAddressing == 2))
+                    linesAdded+=2;
+                return linesAdded+=2;     
+            }
+            else{
+                if(valid == 1)
+                    fprintf(stderr, "[ERROR]: source opperand does not fit the command: \"%s, %s\"\n", command, src);
+                else
+                    fprintf(stderr, "[ERROR]: destination opperand does not fit the command: \"%s, %s\"\n", command, dest);
+            }
+            break;
+        case -1:
+            fprintf(stderr, "[ERROR]: number of opperands is incorrect: \"%s\", number of opperands should be %d\n", command, getNumberOfOpperands(command));
+            break;
+        case -2:
+            fprintf(stderr, "[ERROR]: illegal command name: \"%s\"\n", command);
+            break;
+
+    }
+    return 0;
+}
+
+/*
 int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolCount){
     int valid, srcAddressing, destAddresing, linesAdded;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
@@ -7,14 +57,11 @@ int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolC
     switch (valid)
     {
         case 0:
-            /*printf("valid command - no opperands\n");*/
             buildMachineCodeLines(lines, symbolCount, symbolTable, command, 0);
             return 1;
         case 1:
-            /*printf("valid command - 1 opperand, ");*/
             valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
             if(valid){
-                /*printf("valid opperand, dest addressing = %d, dest = %s\n", destAddresing, dest);*/
                 linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddresing);
                 return linesAdded;                
             }
@@ -22,10 +69,8 @@ int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolC
                 fprintf(stderr, "[ERROR]: opperand does not fit the command: \"%s, %s\"\n", command, dest);
             break;
         case 2:
-            /*printf("valid command - 2 opperands, ");*/
             valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
             if(!valid){
-                /*printf("valid opperands\n");*/
                 linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddresing);
                 return linesAdded;
             }
@@ -44,7 +89,7 @@ int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolC
             break;
     }
     return 0;
-}
+}*/
 
 /**
  * @brief decode an instruction line to binary code
@@ -71,7 +116,7 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
     }
     else
         countOpp = 0;
-    numOfopp = numberOfOpperands(command);/*get number of opperands by command name*/
+    numOfopp = getNumberOfOpperands(command);/*get number of opperands by command name*/
     if(numOfopp == -1)
         return -2;/*illegal command name*/
     if(numOfopp == countOpp)
@@ -128,7 +173,7 @@ int isIndexOpperand(char *opperand){
     return 0;
 }
 
-int numberOfOpperands(char *operation){
+int getNumberOfOpperands(char *operation){
     if((!strcmp(operation, COMMAND_MOV)) || (!strcmp(operation, COMMAND_CMP)) ||
         (!strcmp(operation, COMMAND_ADD)) || (!strcmp(operation, COMMAND_SUB)) ||
         (!strcmp(operation, COMMAND_LEA))){

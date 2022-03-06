@@ -1,7 +1,7 @@
 #include "compiler.h"
 
 void runProgram(char *fileName){
-    FILE *fp;
+    FILE *fp, *extFp;
     symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
     binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
     char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
@@ -13,31 +13,25 @@ void runProgram(char *fileName){
 
     if((fp = fopen(newFileName, "r"))){ /*open .am file*/
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
-            printf("Error/s while first run, please check errors\n");
+            fprintf(stderr, "[ERROR]: error/s while first run, please check errors\n");
             exit(0);
         }
-        else{
-            printf("first run was a success\n");
-            printf("IC = %d, DC = %d\n", ICF, DCF);
-        }
-        if(!startSecondRun(fp, symbolTable, lines, symbolTableSize)){/*create start second run inside the secondRun.c*/
-            printf("Error/s while second run, please check errors\n");
-            exit(0);
-        }
-        else{
-            printf("second run was a success\n");
-            /*printf("symbol count = %d\n", symbolCount);
-            for(i = 0 ; i < symbolCount ; i++){
-                printSymbol(symbolTable+i);
-            }
+        
+        /*create extern file, .ext*/
+        strcpy(newFileName, fileName);
+        strcat(newFileName, ".ext");
+        
+        if(!(extFp = fopen(newFileName, "w")))
+            fprintf(stderr, "[ERROR]: creating .ext file %s\n", newFileName);
 
-            printf("IC = %d, DC = %d\n", IC, DC);
-            for(i = 0 ; i < IC-100 ; i++){
-                printf("%04d\t", i+100);
-                printWord(*(lines+i));
-            }*/
+        if(!startSecondRun(fp, extFp, symbolTable, lines, symbolTableSize)){/*create start second run inside the secondRun.c*/
+            fprintf(stderr, "[ERROR]: error/s while second run, please check errors\n");
+            exit(0);
         }
-        buildOutPutFiles(lines, symbolTable, ICF, DCF);
+        
+        if(extFp)
+            fclose(extFp);
+        buildOutPutFiles(fileName, lines, symbolTable, symbolTableSize, ICF, DCF);
         fclose(fp);/*close .am file*/
     }
 }
@@ -54,12 +48,47 @@ void preCompiler(char *fileName){
         fclose(fp);/*close .as file*/
     }
     else{
-        printf("file not found: %s\n", newFileName);
+        fprintf(stderr, "[ERROR]: file not found: %s\n", newFileName);
     }
 }
 
-void buildOutPutFiles(binLine *lines, symbol *symbolTable, int ICF, int DCF){
+void buildOutPutFiles(char *fileName, binLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
     /*create object file, .ob*/
-    /*create extern file, .ext*/
+    FILE *fp;
+    char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
+    int i;
+    strcpy(newFileName, fileName);
+    strcat(newFileName, ".ob");
+    
+    if((fp = fopen(newFileName, "w"))){
+        fprintf(fp, "\t%d\t%d\n", ICF-DCF-100, DCF);
+        for(i = 0 ; i < ICF-100 ; i++){
+            fprintf(fp, "%04d\t", i+100);
+            printWord(fp, *(lines+i));
+        }
+        fclose(fp);
+    }
+    else{
+        fprintf(stderr, "[ERROR]: creating .ob file %s\n", newFileName);
+    }
+    
     /*create entry file, .ent*/
+    strcpy(newFileName, fileName);
+    strcat(newFileName, ".ent");
+    
+    if((fp = fopen(newFileName, "w"))){
+        printSymbolEntry(fp, symbolTable, symbolTableSize);
+        fclose(fp);
+    }
+    else{
+        fprintf(stderr, "[ERROR]: creating .ent file %s\n", newFileName);
+    }
+}
+
+void printSymbolEntry(FILE *fp, symbol *symbolTable, int symbolTableSize){
+    int i;
+    for(i = 0 ; i < symbolTableSize ; i++){
+        if(!strcmp((symbolTable+i)->attributes[1], ENTRY_ATTRIBUTE))
+            fprintf(fp, "%s,%d,%d\n", (symbolTable+i)->symbol, (symbolTable+i)->baseAddress, (symbolTable+i)->offset);
+    }
 }
