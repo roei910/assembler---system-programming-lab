@@ -6,7 +6,6 @@ void runProgram(char *fileName){
     binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
     char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     int ICF, DCF, symbolTableSize/*, i*/;
-    preCompiler(fileName);
 
     strcpy(newFileName, fileName);
     strcat(newFileName, ".am");
