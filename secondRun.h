@@ -6,8 +6,8 @@
 #endif
 
 int startSecondRun(FILE *, FILE *, symbol *, binLine *, int);
-void getSymbolFromOpperand(char *, char *);
-int extractSymbolFromEntryLine(char *, char *);
 int addAttribute(int, symbol *, int, char *, char *);
+int extractSymbolFromEntryLine(char *, char *);
+void getSymbolFromOpperand(char *, char *);
 int buildSymbolLines(int, FILE *, binLine *, symbol *, int , char *, int);
 void printSymbolExternal(FILE *, symbol *, int);

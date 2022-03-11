@@ -8,7 +8,7 @@
 #endif
 
 #define MAX_MACRO_NAME 20
-#define MAX_MACRO_LENGTH 6
+#define MAX_MACRO_LENGTH 6 /*max lines for a macro decleration*/
 
 typedef struct node{
     char name[MAX_MACRO_NAME];
@@ -18,10 +18,10 @@ typedef struct node{
     struct node *next;
 }MacroNode;
 
-void writeNewFileName(FILE *, char *);
-void fprintMacro(MacroNode *, FILE *);
-void insertMacro(MacroNode **, MacroNode*);
-char *isMacro(char *);
-MacroNode *findMacro(char *, MacroNode *);
-MacroNode *createNewNode(char *, FILE **);
 int replaceAllMacro(FILE *, char *);
+MacroNode *createNewNode(char *, FILE **);
+MacroNode *findMacro(char *, MacroNode *);
+char *isMacro(char *);
+void insertMacro(MacroNode **, MacroNode *);
+void fprintMacro(MacroNode *, FILE *);
+void writeNewFileName(FILE *, char *);
