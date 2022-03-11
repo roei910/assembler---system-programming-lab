@@ -9,14 +9,16 @@
 int replaceAllMacro(FILE *fp, char *fileName){
     char lineBuffer[MAX_LINE], *cp, macroName[MAX_MACRO_NAME];
     int counter;
-    MacroNode *temp, *replaceMacro, *macro = NULL;
+    macroNode *replaceMacro, *macro = NULL;
+    macroNode *temp = (macroNode *)malloc(sizeof(macroNode));
     FILE *secondfp;
     secondfp = fopen(fileName, "w");
     writeNewFileName(secondfp, fileName);
     fgets(lineBuffer, MAX_LINE, fp);
     while(fgets(lineBuffer, MAX_LINE, fp) != NULL){/*read each line*/
+        strcpy(macroName, "");
         if((cp = isMacro(lineBuffer)) != NULL){
-            temp = createNewNode(cp, &fp);
+            createNewNode(fp, cp, temp);
             insertMacro(&macro, temp);
         }
         else{
@@ -30,30 +32,27 @@ int replaceAllMacro(FILE *fp, char *fileName){
         counter++;
     }
     fclose(secondfp);
+    free(temp);
     return 0;
 }
 
-MacroNode *createNewNode(char *macroName, FILE **file){
-    int counter = 1;
-    MacroNode *temp = (MacroNode *)malloc(sizeof(MacroNode));
+void createNewNode(FILE *file, char *macroName, macroNode *node){
+    int counter = 0;
     char lineBuffer[MAX_LINE];
-    FILE *fp = *file;
-    sscanf(macroName+5, " %s", temp->name);
-    temp->startingLine = counter+1;
-    while(fgets(lineBuffer, MAX_LINE, fp) != NULL){
-        counter++;
+    sscanf(macroName+5, " %s", node->name);
+    while(fgets(lineBuffer, MAX_LINE, file) != NULL){
         if(strstr(lineBuffer, "endm") != NULL)
             break;
         else
-            strcpy(temp->macroContent[counter-2], lineBuffer);
+            strcpy(node->macroContent[counter], lineBuffer);
+        counter++;
     }
-    temp->lines = counter - temp->startingLine;
-    temp->next = NULL;
-    return temp;
+    node->lines = counter;
+    node->next = NULL;
 }
 
-MacroNode *findMacro(char *macroName, MacroNode *macro){
-    MacroNode *temp = macro;
+macroNode *findMacro(char *macroName, macroNode *macro){
+    macroNode *temp = macro;
     while(temp != NULL){
         if(!strcmp(temp->name, macroName))
             return temp;
@@ -66,8 +65,8 @@ char *isMacro(char *inputLine){
     return strstr(inputLine, "macro");
 }
 
-void insertMacro(MacroNode **macro, MacroNode *newNode){
-    MacroNode *temp = *macro;
+void insertMacro(macroNode **macro, macroNode *newNode){
+    macroNode *temp = *macro;
     if(*macro == NULL)
         *macro = newNode;
     else{
@@ -81,7 +80,7 @@ void insertMacro(MacroNode **macro, MacroNode *newNode){
     
 }
 
-void fprintMacro(MacroNode *macro, FILE *fp){
+void fprintMacro(macroNode *macro, FILE *fp){
     int i;
     for(i = 0 ; i < macro->lines ; i++)
         fprintf(fp, "%s", macro->macroContent[i]);

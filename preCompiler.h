@@ -13,15 +13,14 @@
 typedef struct node{
     char name[MAX_MACRO_NAME];
     char macroContent[MAX_MACRO_LENGTH][MAX_LINE]; 
-    int startingLine;
     int lines;
     struct node *next;
-}MacroNode;
+}macroNode;
 
 int replaceAllMacro(FILE *, char *);
-MacroNode *createNewNode(char *, FILE **);
-MacroNode *findMacro(char *, MacroNode *);
+void createNewNode(FILE *, char *, macroNode *);
+macroNode *findMacro(char *, macroNode *);
 char *isMacro(char *);
-void insertMacro(MacroNode **, MacroNode *);
-void fprintMacro(MacroNode *, FILE *);
+void insertMacro(macroNode **, macroNode *);
+void fprintMacro(macroNode *, FILE *);
 void writeNewFileName(FILE *, char *);

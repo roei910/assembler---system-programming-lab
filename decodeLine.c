@@ -69,6 +69,7 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
             }
             else{
                 sscanf(ptr, "%s", dest);
+                ptr = strtok(NULL, COMMA_SYMBOL);
                 if(ptr != NULL)
                     return -1;
             }
@@ -304,9 +305,7 @@ int buildMachineCodeLines(int linesCounter, binLine *lines, int symbolCount, sym
 int getNumberFromOpperand(char *opperand){
     int number=0;
     sscanf(opperand+1, "%d", &number);
-    if(number >= 0 && number <= 15)
-        return number;
-    return -1;
+    return number;
 }
 
 int getRegFromOpperand(char *opperand){
@@ -314,9 +313,9 @@ int getRegFromOpperand(char *opperand){
     int reg;
     ptr = strstr(opperand, REGISTER_R_SYMBOL);
     reg = getNumberFromOpperand(ptr);
-    if(reg == -1)
-        return -1;
-    return reg;
+    if(reg >= 0 && reg <= 15)
+        return reg;
+    return -1;
 }
 
 int checkValidSymbol(char *symbol){
