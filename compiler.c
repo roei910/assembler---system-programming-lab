@@ -10,7 +10,7 @@ void runProgram(char *fileName){
     preCompiler(fileName);
     strcpy(newFileName, fileName);
     strcat(newFileName, ".am");
-
+    
     if((fp = fopen(newFileName, "r"))){ /*open .am file*/
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
             fprintf(stderr, "[ERROR]: error/s while first run, please check errors\n");
@@ -33,6 +33,10 @@ void runProgram(char *fileName){
             fclose(extFp);
         buildOutPutFiles(fileName, lines, symbolTable, symbolTableSize, ICF, DCF);
         fclose(fp);/*close .am file*/
+        /*free deallocate memory*/
+        free(symbolTable);
+        free(lines);
+        free(newFileName);
     }
 }
 
@@ -50,6 +54,7 @@ void preCompiler(char *fileName){
     else{
         fprintf(stderr, "[ERROR]: file not found: %s\n", newFileName);
     }
+    free(newFileName);
 }
 
 void buildOutPutFiles(char *fileName, binLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
@@ -83,6 +88,7 @@ void buildOutPutFiles(char *fileName, binLine *lines, symbol *symbolTable, int s
     else{
         fprintf(stderr, "[ERROR]: creating .ent file %s\n", newFileName);
     }
+    free(newFileName);
 }
 
 void printSymbolEntry(FILE *fp, symbol *symbolTable, int symbolTableSize){

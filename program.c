@@ -7,7 +7,7 @@ int main(int argc, char **argv){
 
 void checkInput(int argc, char **argv){
     if(argc == 1)
-        printf("Error, no input files\n");
+        printf("[Error]: no input files\n");
     else
         printMessages(argc, argv);
 }

@@ -49,48 +49,6 @@ int lineDecode(char *inputLine, char *command, char *src, char *dest, int *srcAd
     return 0;
 }
 
-/*
-int lineDecode(char *inputLine, binLine *lines, symbol *symbolTable, int symbolCount){
-    int valid, srcAddressing, destAddresing, linesAdded;
-    char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
-    valid = decodeInstructionLine(inputLine, command, src, dest);
-    switch (valid)
-    {
-        case 0:
-            buildMachineCodeLines(lines, symbolCount, symbolTable, command, 0);
-            return 1;
-        case 1:
-            valid = checkValidCommandOneOpperand(command, dest, &destAddresing);
-            if(valid){
-                linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddresing);
-                return linesAdded;                
-            }
-            else
-                fprintf(stderr, "[ERROR]: opperand does not fit the command: \"%s, %s\"\n", command, dest);
-            break;
-        case 2:
-            valid = checkValidCommandTwoOpperands(command, src, &srcAddressing, dest, &destAddresing);
-            if(!valid){
-                linesAdded = buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddresing);
-                return linesAdded;
-            }
-            else{
-                if(valid == 1)
-                    fprintf(stderr, "[ERROR]: source opperand does not fit the command: \"%s, %s\"\n", command, src);
-                else
-                    fprintf(stderr, "[ERROR]: destination opperand does not fit the command: \"%s, %s\"\n", command, dest);
-            }
-            break;
-        case -1:
-            fprintf(stderr, "[ERROR]: number of opperands is incorrect: \"%s\", number of opperands should be %d\n", command, numberOfOpperands(command));
-            break;
-        case -2:
-            fprintf(stderr, "[ERROR]: illegal command name: \"%s\"\n", command);
-            break;
-    }
-    return 0;
-}*/
-
 /**
  * @brief decode an instruction line to binary code
  * 

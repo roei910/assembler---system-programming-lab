@@ -1,24 +1,5 @@
 #include "firstRun.h"
 
-/*
-add symbol:
-int i;
-    symbol *table = (symbol *) malloc(8 * sizeof(symbol));
-    addSymbol(table, 0, "W", "external", 0, 0);
-    addSymbol(table, 1, "MAIN", "code", 96, 4);
-    addAttribute(table, 8, "MAIN", "entry");
-    addSymbol(table, 2, "LOOP", "code", 96, 8);
-    addSymbol(table, 3, "END", "code", 128, 12);
-    addSymbol(table, 4, "STR", "data", 128, 13);
-    addSymbol(table, 5, "LIST", "data", 144, 2);
-    addAttribute(table, 8, "LIST", "entry");
-    addSymbol(table, 6, "K", "data", 149, 5);
-    addAttribute(table, 8, "K", "entry");
-    addSymbol(table, 7, "val1", "external", 0, 0);
-    for(i = 0 ; i < 8 ; i++){
-        printSymbol(table+i);
-    }*/
-
 int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *DCF, int *tableSize){
     int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1;
     int srcAddressing, destAddressing, numberOfOpperands;
@@ -129,15 +110,6 @@ void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int ba
     ((table+index)->attributeCount) = 1;
 }
 
-void printSymbol(symbol *s){
-    int i;
-    printf("{symbol= %s, base= %d, offset= %d, attributes(%d)= ", s->symbol, s->baseAddress, s->offset, s->attributeCount);
-    for(i = 0 ; i < (s->attributeCount)-1 ; i++)
-        printf("%s, ", s->attributes[i]);
-    printf("%s", s->attributes[s->attributeCount-1]);
-    printf("}\n");
-}
-
 int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
     int tempNumber, countLines = 0;
     char tempC;
@@ -167,16 +139,6 @@ int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
     return countLines;
 }
 
-int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int symbolCount, int IC, char *attribute){
-    if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
-        createSymbol(symbolTable, symbolCount++, tempSymbol, attribute, 16 * (IC / 16), IC - 16 * (IC / 16));
-    else{
-        printf("error: symbol already exists\n");
-        return 0;
-    }
-    return 1;
-}
-
 int buildCodeLines(int numberOfOpperands, binLine *lines, symbol *symbolTable, int symbolCount,
     char *command, char *src, int srcAddressing, char *dest, int destAddressing){
     switch (numberOfOpperands)
@@ -197,3 +159,24 @@ void extractSymbol(char *inputLine, char *symbol){
     ptr = strtok(tempLine, LABEL_SYMBOL);
     strcpy(symbol, ptr);
 }
+
+/*
+void printSymbol(symbol *s){
+    int i;
+    printf("{symbol= %s, base= %d, offset= %d, attributes(%d)= ", s->symbol, s->baseAddress, s->offset, s->attributeCount);
+    for(i = 0 ; i < (s->attributeCount)-1 ; i++)
+        printf("%s, ", s->attributes[i]);
+    printf("%s", s->attributes[s->attributeCount-1]);
+    printf("}\n");
+}*/
+
+/*
+int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int symbolCount, int IC, char *attribute){
+    if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
+        createSymbol(symbolTable, symbolCount++, tempSymbol, attribute, 16 * (IC / 16), IC - 16 * (IC / 16));
+    else{
+        fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
+        return 0;
+    }
+    return 1;
+}*/

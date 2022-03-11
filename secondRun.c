@@ -18,7 +18,6 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
             }        
         }
         else if((!isDataDecleration(inputLine)) && (!isExternDecleration(inputLine)) && (!strstr(inputLine, COMMENT_LINE_STRING))){
-            /*printf("there is a normal line, need to complete the binary line\n");*/
             commandLines = lineDecode(inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
             switch (numberOfOpperands)
             {
