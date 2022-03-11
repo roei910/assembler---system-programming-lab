@@ -9,12 +9,11 @@ void checkInput(int argc, char **argv){
     if(argc == 1)
         printf("[Error]: no input files\n");
     else
-        printMessages(argc, argv);
+        startCompiler(argc, argv);
 }
 
-void printMessages(int argc, char **argv){
+void startCompiler(int argc, char **argv){
     int i;
-    for(i = 1; i < argc; i++){
+    for(i = 1; i < argc; i++)
         runProgram(*(argv+i));/*run each file name through compiler*/ 
-    }
 }

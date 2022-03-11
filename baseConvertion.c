@@ -39,30 +39,3 @@ void createBinaryLine(binLine *line, int numOfArguments, ...){
     }
     va_end(valist);
 }
-
-/*
-void printBinary(char *bin, int bits){
-    int i;
-    for(i = 0 ; i < bits ; i++){
-        printf("%d", bin[i]);
-    }
-    printf("\n");
-}*/
-
-/*
-int binaryToNumber(char *bin, int bits){
-    int number=0, i, y;
-    for(i = bits-1, y = 0 ; i >= 0 ; i--, y++){
-        number+=pow(2, y)*bin[i];
-    }
-    return number;
-}*/
-
-/*
-void numberToBinary(int number, char **bin, int bits){
-    int i;
-    char *cp = (char *)calloc(bits, sizeof(char));
-    *bin = cp;
-    for(i = bits-1 ; i >= 0 ; i--, number>>=1)
-        cp[i] = (number & 1) ? 1 : 0;
-}*/

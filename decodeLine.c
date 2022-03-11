@@ -49,10 +49,6 @@ int lineDecode(char *inputLine, char *command, char *src, char *dest, int *srcAd
     return 0;
 }
 
-/**
- * @brief decode an instruction line to binary code
- * 
- */
 int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest){
     char opperands[2*MAX_OPPERAND_LENGTH], *ptr, inputLineCpy[MAX_LINE];
     int countOpp, numOfopp;
@@ -150,9 +146,6 @@ int getNumberOfOpperands(char *operation){
     return -1;/*invalid command*/
 }
 
-/**
- * @brief first group has 2 opperands
- */
 int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, char *dest, int *destAddressing){
     *destAddressing = checkOpperandType(dest);
     *srcAddressing = checkOpperandType(src);
@@ -167,9 +160,6 @@ int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, 
     return 0;
 }
 
-/**
- * @brief second group has 1 opperand
- */
 int checkValidCommandOneOpperand(char *command, char *dest, int *destAddressing){
     *destAddressing = checkOpperandType(dest);
     if(*destAddressing == 0){
@@ -318,59 +308,6 @@ int checkValidSymbol(char *symbol){
     return 1;
 }
 
-int checkSymbolType(int tableSize, symbol *symbolTable, char *symbolName){
-    int index, i;
-    index = findSymbolInTable(symbolTable, tableSize, symbolName);
-    for (i = 0; i < (symbolTable+index)->attributeCount; i++){
-        if(isExtern((symbolTable+index)->attributes[i]))
-            return 1;
-        else if(isEntry((symbolTable+index)->attributes[i]))
-            return 2;
-    }
-    return 0;
-}
-
-int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
-    int i;
-    for(i = 0 ; i < tableSize ; i++)
-        if(!strcmp((table+i)->symbol, symbolName))
-            return i;
-    return -1;
-}
-
-int isExtern(char *inputLine){
-    if(strstr(inputLine, EXTERN_DECLERATION))
-        return 1;
-    return 0;
-}
-
-int isEntry(char *inputLine){
-    if(strstr(inputLine, ENTRY_DECLERATION))
-        return 1;
-    return 0;
-}
-
-int checkDecleration(char *inputLine, char *decleration){
-    if(strstr(inputLine, decleration) != NULL)
-        return 1;
-    return 0;
-}
-
-int skipSymbol(char *inputLine){
-    char *ptr;
-    if((ptr = strstr(inputLine, LABEL_SYMBOL))){
-        ptr += strlen(LABEL_SYMBOL);
-        while((*ptr) == ' '){
-            if(isalnum(*ptr))
-                break;
-            ptr++;
-        }
-        strcpy(inputLine, ptr);
-        return 1;
-    }
-    return 0;
-}
-
 int isSymbolDecleration(char *inputLine){
     char *cPointer;
     if((cPointer = strstr(inputLine, LABEL_SYMBOL)) != NULL)
@@ -391,3 +328,59 @@ int isExternDecleration(char *inputLine){
         return 1;
     return 0;
 }
+
+int skipSymbol(char *inputLine){
+    char *ptr;
+    if((ptr = strstr(inputLine, LABEL_SYMBOL))){
+        ptr += strlen(LABEL_SYMBOL);
+        while((*ptr) == ' '){
+            if(isalnum(*ptr))
+                break;
+            ptr++;
+        }
+        strcpy(inputLine, ptr);
+        return 1;
+    }
+    return 0;
+}
+
+int checkDecleration(char *inputLine, char *decleration){
+    if(strstr(inputLine, decleration) != NULL)
+        return 1;
+    return 0;
+}
+
+int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
+    int i;
+    for(i = 0 ; i < tableSize ; i++)
+        if(!strcmp((table+i)->symbol, symbolName))
+            return i;
+    return -1;
+}
+
+/*
+int checkSymbolType(int tableSize, symbol *symbolTable, char *symbolName){
+    int index, i;
+    index = findSymbolInTable(symbolTable, tableSize, symbolName);
+    for (i = 0; i < (symbolTable+index)->attributeCount; i++){
+        if(isExtern((symbolTable+index)->attributes[i]))
+            return 1;
+        else if(isEntry((symbolTable+index)->attributes[i]))
+            return 2;
+    }
+    return 0;
+}
+
+int isExtern(char *inputLine){
+    if(strstr(inputLine, EXTERN_DECLERATION))
+        return 1;
+    return 0;
+}
+
+int isEntry(char *inputLine){
+    if(strstr(inputLine, ENTRY_DECLERATION))
+        return 1;
+    return 0;
+}
+
+*/

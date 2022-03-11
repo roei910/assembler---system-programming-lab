@@ -18,10 +18,10 @@ typedef struct node{
     struct node *next;
 }MacroNode;
 
-int replaceAllMacro(FILE *, char *);
-MacroNode *findMacro(char *, MacroNode *);
-char *isMacro(char *);
-void insertMacro(MacroNode **, MacroNode*);
-void fprintMacro(MacroNode *, FILE *);
-MacroNode *createNewNode(char *, FILE **);
 void writeNewFileName(FILE *, char *);
+void fprintMacro(MacroNode *, FILE *);
+void insertMacro(MacroNode **, MacroNode*);
+char *isMacro(char *);
+MacroNode *findMacro(char *, MacroNode *);
+MacroNode *createNewNode(char *, FILE **);
+int replaceAllMacro(FILE *, char *);

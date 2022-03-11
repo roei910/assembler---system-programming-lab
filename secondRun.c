@@ -4,7 +4,7 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     int srcAddressing, destAddressing, numberOfOpperands;
-    int error = 1, linesCounter = 0, commandLines = 0/*, symbolIndex*/;
+    int error = 1, linesCounter = 0, commandLines = 0;
     rewind(fp);
     while(fgets(inputLine, MAX_LINE, fp) != NULL){
         if(isSymbolDecleration(inputLine))
@@ -66,11 +66,13 @@ int addAttribute(symbol *table, int tableSize, char *symbolName, char *attr){
     if(index == -1){
         printf("\n");
         fprintf(stderr, "[ERROR]: in entry line, symbol not found in symbol table\n");
-        return 0;/*symbol not found in table*/
+        return 0;
     }
     attrIndex = (table+index)->attributeCount;
-    if(attrIndex >= MAX_ATTRIBUTES)
-        return -1;/*max attribues*/
+    if(attrIndex >= MAX_ATTRIBUTES){
+        fprintf(stderr, "[ERROR]: max attributes for symbol \"%s\"\n", symbolName);
+        return 0;
+    }
     strcpy(((table+index)->attributes)[attrIndex], attr);
     ((table+index)->attributeCount)++;
     return 1;
@@ -96,8 +98,8 @@ int buildSymbolLines(FILE *fp, binLine *lines, symbol *symbolTable, int tableSiz
     getSymbolFromOpperand(opperand, tempSymbol);
     symbolIndex = findSymbolInTable(symbolTable, tableSize, tempSymbol);
     if(symbolIndex == -1){
-        error = 0;
         fprintf(stderr, "[ERROR]: couldn't find symbol \"%s\" in the symbol table\n", tempSymbol);
+        error = 0;
     }
     if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE)){
         createBinaryLine(lines, 2, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress);

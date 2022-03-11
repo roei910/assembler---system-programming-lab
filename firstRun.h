@@ -10,11 +10,14 @@
 #define QUOTATION_SYMBOL_CHAR '"'
 
 int startFirstRun(FILE *, symbol *, binLine *, int *, int *, int *);
+void extractSymbol(char *, char *);
+void createSymbol(symbol *, int, char *, char * ,int, int);
+int buildCodeLines(int, binLine *, symbol *, int, char *, char *, int, char *, int);
+int extractDataFromLine(char *, binLine *, symbol *);
+
+/*
 int isDataLine(char *);
 int isSymbol(char *);
-void createSymbol(symbol *, int, char *, char * ,int, int);
 void printSymbol(symbol *);
-int extractDataFromLine(char *, binLine *, symbol *);
 int addSymbolToTable(char *, char *, symbol *, int, int, char *);
-int buildCodeLines(int, binLine *, symbol *, int, char *, char *, int, char *, int);
-void extractSymbol(char *, char *);
+*/

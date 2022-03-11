@@ -5,13 +5,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
     int srcAddressing, destAddressing, numberOfOpperands;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
-    while(fgets(inputLine, MAX_LINE, fp) != NULL){/*2*/
+    while(fgets(inputLine, MAX_LINE, fp) != NULL){
         symbolDecleration = 0;
-        if(isSymbolDecleration(inputLine)){/*3*/
-            symbolDecleration = 1;/*4*/
+        if(isSymbolDecleration(inputLine)){
+            symbolDecleration = 1;
         }
-        if(isDataDecleration(inputLine)){/*5*/
-            if(symbolDecleration){/*6 - add symbol to table*/
+        if(isDataDecleration(inputLine)){
+            if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
                     fprintf(stderr, "[ERROR]: invalid symbol \"%s\"\n", tempSymbol);
@@ -70,19 +70,14 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
     return error;
 }
 
-/**
- * @brief return true if the line is .data or .string
- * 
- * @param inputLine 
- * @return int 
- */
+/*
 int isDataLine(char *inputLine){
     if(strstr(inputLine, DATA_DECLERATION))
         return 1;
     if(strstr(inputLine, STRING_DECLERATION))
         return 1;
     return 0;
-}
+}*/
 
 int isStringLine(char *inputLine){
     if(strstr(inputLine, STRING_DECLERATION))
@@ -90,17 +85,13 @@ int isStringLine(char *inputLine){
     return 0;
 }
 
-/**
- * @brief return true if the line has a symbol
- * 
- * @param inputLine 
- * @return int 
- */
+/*
 int isSymbol(char *inputLine){
     if(strstr(inputLine, LABEL_SYMBOL))
         return 1;
     return 0;
 }
+*/
 
 void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
     strcpy((table + (index))->symbol, symbolName);
