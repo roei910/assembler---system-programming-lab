@@ -7,8 +7,7 @@
 
 int startSecondRun(FILE *, FILE *, symbol *, binLine *, int);
 void getSymbolFromOpperand(char *, char *);
-int isEntryDecleration(char *);
 int extractSymbolFromEntryLine(char *, char *);
-int addAttribute(symbol *, int, char *, char *);
-int buildSymbolLines(FILE *, binLine *, symbol *, int , char *, int);
+int addAttribute(int, symbol *, int, char *, char *);
+int buildSymbolLines(int, FILE *, binLine *, symbol *, int , char *, int);
 void printSymbolExternal(FILE *, symbol *, int);

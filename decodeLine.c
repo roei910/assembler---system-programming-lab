@@ -1,6 +1,6 @@
 #include "decodeLine.h"
 
-int lineDecode(char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
+int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
     int valid, linesAdded = 0;
     *numberOfOpperands = decodeInstructionLine(inputLine, command, src, dest);
     switch (*numberOfOpperands)
@@ -17,7 +17,8 @@ int lineDecode(char *inputLine, char *command, char *src, char *dest, int *srcAd
                 return linesAdded+=2;                
             }
             else
-                fprintf(stderr, "[ERROR]: opperand does not fit the command: \"%s, %s\"\n", command, dest);
+                fprintf(stderr, "[ERROR]: line:%d, opperand does not fit the command: \"%s, %s\"\n", line, command, dest);
+            break;
         case 2:
             valid = checkValidCommandTwoOpperands(command, src, srcAddressing, dest, destAddressing);
             if(!valid){
@@ -32,17 +33,19 @@ int lineDecode(char *inputLine, char *command, char *src, char *dest, int *srcAd
                 return linesAdded+=2;     
             }
             else{
-                if(valid == 1)
-                    fprintf(stderr, "[ERROR]: source opperand does not fit the command: \"%s, %s\"\n", command, src);
+                if(valid == 3)
+                    fprintf(stderr, "[ERROR]: line:%d, source and destination opperands do not fit the command: \"%s\"\n", line, command);
+                else if(valid == 1)
+                    fprintf(stderr, "[ERROR]: line:%d, source opperand does not fit the command: \"%s, %s\"\n", line, command, src);
                 else
-                    fprintf(stderr, "[ERROR]: destination opperand does not fit the command: \"%s, %s\"\n", command, dest);
+                    fprintf(stderr, "[ERROR]: line:%d, destination opperand does not fit the command: \"%s, %s\"\n", line, command, dest);
             }
             break;
         case -1:
-            fprintf(stderr, "[ERROR]: number of opperands is incorrect: \"%s\", number of opperands should be %d\n", command, getNumberOfOpperands(command));
+            fprintf(stderr, "[ERROR]: line:%d, number of opperands is incorrect: \"%s\", number of opperands should be %d\n", line, command, getNumberOfOpperands(command));
             break;
         case -2:
-            fprintf(stderr, "[ERROR]: illegal command name: \"%s\"\n", command);
+            fprintf(stderr, "[ERROR]: line:%d, illegal command name: \"%s\"\n", line, command);
             break;
 
     }
@@ -64,8 +67,11 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
                 strcpy(dest, src);
                 countOpp = 1;
             }
-            else
+            else{
                 sscanf(ptr, "%s", dest);
+                if(ptr != NULL)
+                    return -1;
+            }
         }
     }
     else
@@ -104,7 +110,7 @@ int isRegister(char *opperand){
     char c;
     int num;
     sscanf(opperand, "%c%d", &c, &num);
-    if((c == 'r') && (num >= 0) && (num <= 15))
+    if(c == 'r')
         return 1;
     return 0;
 }
@@ -147,17 +153,18 @@ int getNumberOfOpperands(char *operation){
 }
 
 int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, char *dest, int *destAddressing){
+    int valid = 0;
     *destAddressing = checkOpperandType(dest);
     *srcAddressing = checkOpperandType(src);
     if((*srcAddressing == 0) || (*srcAddressing == 3)){
         if(!strcmp(command, COMMAND_LEA))
-            return 1;
+            valid = 1;
     }
     if(*destAddressing == 0){
         if(strcmp(command, COMMAND_CMP))
-            return 2;
+            valid += 2;
     }
-    return 0;
+    return valid;
 }
 
 int checkValidCommandOneOpperand(char *command, char *dest, int *destAddressing){
@@ -218,7 +225,7 @@ int getOpcode(char *command){
     return -1;
 }
 
-int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
+int buildMachineCodeLines(int linesCounter, binLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
     int dest, destAddressing, src, srcAddressing, linesWritten = 0;
     char *destPtr, *srcPtr;
     va_list valist;
@@ -237,6 +244,10 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
                 dest = getRegFromOpperand(destPtr);
             else
                 dest = 0;
+            if(dest == -1){
+                fprintf(stderr, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
+                return 0;
+            }
             createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
             createBinaryLine(lines+(linesWritten++), 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
             if(destAddressing == 0)
@@ -255,6 +266,10 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
                 src = getRegFromOpperand(srcPtr);
             else
                 src = 0;
+            if(src == -1){
+                fprintf(stderr, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
+                return 0;
+            }
             destPtr = va_arg(valist, char *);
             destAddressing = va_arg(valist, int);
             if(destAddressing == 0)
@@ -263,6 +278,10 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
                 dest = getRegFromOpperand(destPtr);
             else
                 dest = 0;
+            if(dest == -1){
+                fprintf(stderr, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
+                return 0;
+            }
             createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
             createBinaryLine(lines+(linesWritten++), 6, MACHINE_CODE_A, getFunct(command), (srcAddressing == 0)? 0 : src, srcAddressing, (destAddressing == 0)? 0 : dest, destAddressing);          
             if(srcAddressing == 0)
@@ -285,13 +304,19 @@ int buildMachineCodeLines(binLine *lines, int symbolCount, symbol *symbolTable, 
 int getNumberFromOpperand(char *opperand){
     int number=0;
     sscanf(opperand+1, "%d", &number);
-    return number;
+    if(number >= 0 && number <= 15)
+        return number;
+    return -1;
 }
 
 int getRegFromOpperand(char *opperand){
     char *ptr;
+    int reg;
     ptr = strstr(opperand, REGISTER_R_SYMBOL);
-    return getNumberFromOpperand(ptr);
+    reg = getNumberFromOpperand(ptr);
+    if(reg == -1)
+        return -1;
+    return reg;
 }
 
 int checkValidSymbol(char *symbol){
@@ -358,29 +383,17 @@ int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
     return -1;
 }
 
-/*
-int checkSymbolType(int tableSize, symbol *symbolTable, char *symbolName){
-    int index, i;
-    index = findSymbolInTable(symbolTable, tableSize, symbolName);
-    for (i = 0; i < (symbolTable+index)->attributeCount; i++){
-        if(isExtern((symbolTable+index)->attributes[i]))
-            return 1;
-        else if(isEntry((symbolTable+index)->attributes[i]))
-            return 2;
-    }
-    return 0;
+int isEmptyLine(char *inputLine){
+    char tempString[MAX_LINE];
+    return (sscanf(inputLine, "%s\n", tempString) == -1);
 }
 
-int isExtern(char *inputLine){
-    if(strstr(inputLine, EXTERN_DECLERATION))
+int isCommentLine(char *inputLine){
+    return (!strstr(inputLine, COMMENT_LINE_STRING));
+}
+
+int isEntryDecleration(char *inputLine){
+    if(checkDecleration(inputLine, ENTRY_DECLERATION))
         return 1;
     return 0;
 }
-
-int isEntry(char *inputLine){
-    if(strstr(inputLine, ENTRY_DECLERATION))
-        return 1;
-    return 0;
-}
-
-*/

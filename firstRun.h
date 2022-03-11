@@ -12,7 +12,7 @@
 int startFirstRun(FILE *, symbol *, binLine *, int *, int *, int *);
 void extractSymbol(char *, char *);
 void createSymbol(symbol *, int, char *, char * ,int, int);
-int buildCodeLines(int, binLine *, symbol *, int, char *, char *, int, char *, int);
+int buildCodeLines(int, int, binLine *, symbol *, int, char *, char *, int, char *, int);
 int extractDataFromLine(char *, binLine *, symbol *);
 
 /*

@@ -13,7 +13,7 @@ void runProgram(char *fileName){
     
     if((fp = fopen(newFileName, "r"))){ /*open .am file*/
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
-            fprintf(stderr, "[ERROR]: error/s while first run, please check errors\n");
+            fprintf(stderr, "[First Run Error]: please check error/s\n");
             exit(0);
         }
         
@@ -25,7 +25,7 @@ void runProgram(char *fileName){
             fprintf(stderr, "[ERROR]: creating .ext file %s\n", newFileName);
 
         if(!startSecondRun(fp, extFp, symbolTable, lines, symbolTableSize)){/*create start second run inside the secondRun.c*/
-            fprintf(stderr, "[ERROR]: error/s while second run, please check errors\n");
+            fprintf(stderr, "[Second Run Error]: please check error/s\n");
             exit(0);
         }
         

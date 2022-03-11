@@ -48,9 +48,8 @@
 #define MACHINE_CODE_A 2
 #define MACHINE_CODE_R 1
 #define MACHINE_CODE_E 0
-/*
-int lineDecode(char *, binLine *, symbol *, int);*/
-int lineDecode(char *, char *, char *, char *, int *, int *, int *);
+
+int lineDecode(int, char *, char *, char *, char *, int *, int *, int *);
 int decodeInstructionLine(char *, char *, char *, char *);
 int checkOpperandType(char *);
 int isNumber(char *);
@@ -61,7 +60,7 @@ int checkValidCommandTwoOpperands(char *, char *, int *, char *, int *);
 int checkValidCommandOneOpperand(char *, char *, int *);
 int getFunct(char *);
 int getOpcode(char *);
-int buildMachineCodeLines(binLine *, int symbolCount, symbol *, char *, int, ...);
+int buildMachineCodeLines(int , binLine *, int symbolCount, symbol *, char *, int, ...);
 int getNumberFromOpperand(char *);
 int getRegFromOpperand(char *);
 int checkValidSymbol(char *);
@@ -74,3 +73,6 @@ int skipSymbol(char *);
 int isSymbolDecleration(char *);
 int isDataDecleration(char *);
 int isExternDecleration(char *);
+int isEmptyLine(char *inputLine);
+int isCommentLine(char *inputLine);
+int isEntryDecleration(char *inputLine);

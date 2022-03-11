@@ -1,11 +1,12 @@
 #include "firstRun.h"
 
 int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *DCF, int *tableSize){
-    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1;
+    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, line = 0;
     int srcAddressing, destAddressing, numberOfOpperands;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     while(fgets(inputLine, MAX_LINE, fp) != NULL){
+        line++;
         symbolDecleration = 0;
         if(isSymbolDecleration(inputLine)){
             symbolDecleration = 1;
@@ -14,13 +15,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: invalid symbol \"%s\"\n", tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", line, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_ATTRIBUTE, 16 * (IC / 16), IC - (16 * (IC / 16)));
                 else{
-                    fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", line, tempSymbol);
                     error = 0;
                 }
             }
@@ -29,36 +30,37 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
             DC += addedLines;
             IC += addedLines;
         }
-        else if(isExternDecleration(inputLine)){/*8*/
+        else if(isExternDecleration(inputLine)){
             sscanf(inputLine, "%s %s", tempSymbol, tempSymbol);
             if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
                 error = 0;
             if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                 createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
             else{
-                fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
+                fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", line, tempSymbol);
                 error = 0;
             }
-            /*10*/
         }
-        else if((!strstr(inputLine, COMMENT_LINE_STRING)) && (!strstr(inputLine, ENTRY_DECLERATION))){/*11 - normal code line*/
+        else if((!isEmptyLine(inputLine)) && isCommentLine(inputLine) && (!isEntryDecleration(inputLine))){/*11 - normal code line*/
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: invalid symbol \"%s\"\n", tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", line, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, CODE_ATTRIBUTE, 16 * (IC / 16), IC - 16 * (IC / 16));
                 else{
-                    fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", line, tempSymbol);
                     error = 0;
                 }
                 skipSymbol(inputLine);
             }
-            addedLines = lineDecode(inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
-            if(!buildCodeLines(numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
-                fprintf(stderr, "[ERROR]: code lines were not built, command: \"%s\"\n", command);
+            addedLines = lineDecode(line, inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
+            if(!addedLines){
+                error = 0;
+            }
+            else if(!buildCodeLines(line, numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
                 error = 0;
             }
             IC += addedLines;
@@ -70,28 +72,11 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
     return error;
 }
 
-/*
-int isDataLine(char *inputLine){
-    if(strstr(inputLine, DATA_DECLERATION))
-        return 1;
-    if(strstr(inputLine, STRING_DECLERATION))
-        return 1;
-    return 0;
-}*/
-
 int isStringLine(char *inputLine){
     if(strstr(inputLine, STRING_DECLERATION))
         return 1;
     return 0;
 }
-
-/*
-int isSymbol(char *inputLine){
-    if(strstr(inputLine, LABEL_SYMBOL))
-        return 1;
-    return 0;
-}
-*/
 
 void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
     strcpy((table + (index))->symbol, symbolName);
@@ -130,16 +115,16 @@ int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
     return countLines;
 }
 
-int buildCodeLines(int numberOfOpperands, binLine *lines, symbol *symbolTable, int symbolCount,
+int buildCodeLines(int linesCounter, int numberOfOpperands, binLine *lines, symbol *symbolTable, int symbolCount,
     char *command, char *src, int srcAddressing, char *dest, int destAddressing){
     switch (numberOfOpperands)
     {
         case 0:
-            return buildMachineCodeLines(lines, symbolCount, symbolTable, command, 0);
+            return buildMachineCodeLines(linesCounter ,lines, symbolCount, symbolTable, command, 0);
         case 1:
-            return buildMachineCodeLines(lines, symbolCount, symbolTable, command, 2, dest, destAddressing);
+            return buildMachineCodeLines(linesCounter ,lines, symbolCount, symbolTable, command, 2, dest, destAddressing);
         case 2:
-            return buildMachineCodeLines(lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddressing);
+            return buildMachineCodeLines(linesCounter ,lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddressing);
     }
     return 0;
 }
@@ -150,24 +135,3 @@ void extractSymbol(char *inputLine, char *symbol){
     ptr = strtok(tempLine, LABEL_SYMBOL);
     strcpy(symbol, ptr);
 }
-
-/*
-void printSymbol(symbol *s){
-    int i;
-    printf("{symbol= %s, base= %d, offset= %d, attributes(%d)= ", s->symbol, s->baseAddress, s->offset, s->attributeCount);
-    for(i = 0 ; i < (s->attributeCount)-1 ; i++)
-        printf("%s, ", s->attributes[i]);
-    printf("%s", s->attributes[s->attributeCount-1]);
-    printf("}\n");
-}*/
-
-/*
-int addSymbolToTable(char *inputLine, char *tempSymbol, symbol *symbolTable, int symbolCount, int IC, char *attribute){
-    if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
-        createSymbol(symbolTable, symbolCount++, tempSymbol, attribute, 16 * (IC / 16), IC - 16 * (IC / 16));
-    else{
-        fprintf(stderr, "[ERROR]: symbol \"%s\" already exists\n", tempSymbol);
-        return 0;
-    }
-    return 1;
-}*/

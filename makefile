@@ -16,3 +16,5 @@ preCompiler.o: preCompiler.c preCompiler.h
 	gcc -c -ansi -Wall -pedantic preCompiler.c -o preCompiler.o
 clean:
 	rm *.o
+remove:
+	rm **/*.ob **/*.ext **/*.ent **/*.am
