@@ -1,5 +1,16 @@
 #include "firstRun.h"
 
+/**
+ * @brief start a first run of a file fp, returns FALSE if the run was successfull
+ * 
+ * @param fp 
+ * @param symbolTable 
+ * @param lines 
+ * @param ICF 
+ * @param DCF 
+ * @param tableSize 
+ * @return int 
+ */
 int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *DCF, int *tableSize){
     int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, line = 0;
     int srcAddressing, destAddressing, numberOfOpperands;
@@ -26,7 +37,7 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
                 }
             }
             /*7 - add data as bin lines, add DC count according to lines created*/
-            addedLines = extractDataFromLine(inputLine, lines+IC-100, symbolTable);
+            addedLines = extractDataFromLine(inputLine, lines+IC-100);
             DC += addedLines;
             IC += addedLines;
         }
@@ -41,7 +52,7 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
                 error = 0;
             }
         }
-        else if((!isEmptyLine(inputLine)) && isCommentLine(inputLine) && (!isEntryDecleration(inputLine))){/*11 - normal code line*/
+        else if((!isEmptyLine(inputLine)) && (!isCommentLine(inputLine)) && (!isEntryDecleration(inputLine))){/*11 - normal code line*/
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
@@ -72,12 +83,28 @@ int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *
     return error;
 }
 
+/**
+ * @brief returns true if an inputline contains .string
+ * 
+ * @param inputLine 
+ * @return int 
+ */
 int isStringLine(char *inputLine){
     if(strstr(inputLine, STRING_DECLERATION))
         return 1;
     return 0;
 }
 
+/**
+ * @brief Creates a Symbol in the symbol table
+ * 
+ * @param table 
+ * @param index 
+ * @param symbolName 
+ * @param attr 
+ * @param base 
+ * @param offset 
+ */
 void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
     strcpy((table + (index))->symbol, symbolName);
     (table+index)->baseAddress = base;
@@ -86,7 +113,14 @@ void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int ba
     ((table+index)->attributeCount) = 1;
 }
 
-int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
+/**
+ * @brief creates .string and .data binary lines, returns the amount of lines created
+ * 
+ * @param inputLine 
+ * @param lines 
+ * @return int 
+ */
+int extractDataFromLine(char *inputLine, binLine *lines){
     int tempNumber, countLines = 0;
     char tempC;
     char *ptr, tempLine[MAX_LINE];
@@ -115,6 +149,21 @@ int extractDataFromLine(char *inputLine, binLine *lines, symbol *symbolTable){
     return countLines;
 }
 
+/**
+ * @brief build machine code lines to binLine array according to command type
+ * 
+ * @param linesCounter 
+ * @param numberOfOpperands 
+ * @param lines 
+ * @param symbolTable 
+ * @param symbolCount 
+ * @param command 
+ * @param src 
+ * @param srcAddressing 
+ * @param dest 
+ * @param destAddressing 
+ * @return int 
+ */
 int buildCodeLines(int linesCounter, int numberOfOpperands, binLine *lines, symbol *symbolTable, int symbolCount,
     char *command, char *src, int srcAddressing, char *dest, int destAddressing){
     switch (numberOfOpperands)
@@ -129,6 +178,12 @@ int buildCodeLines(int linesCounter, int numberOfOpperands, binLine *lines, symb
     return 0;
 }
 
+/**
+ * @brief extracts a symbol from inputline and copies the symbol to symbol parameter
+ * 
+ * @param inputLine 
+ * @param symbol 
+ */
 void extractSymbol(char *inputLine, char *symbol){
     char *ptr, tempLine[MAX_LINE];
     strcpy(tempLine, inputLine);

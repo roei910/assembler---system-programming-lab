@@ -12,6 +12,6 @@
 int startFirstRun(FILE *, symbol *, binLine *, int *, int *, int *);
 int isStringLine(char *);
 void createSymbol(symbol *, int, char *, char *, int, int);
-int extractDataFromLine(char *, binLine *, symbol *);
+int extractDataFromLine(char *, binLine *);
 int buildCodeLines(int, int, binLine *, symbol *, int, char *, char *, int, char *, int);
 void extractSymbol(char *, char *);

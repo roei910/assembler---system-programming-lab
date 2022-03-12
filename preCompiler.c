@@ -6,6 +6,13 @@
  */
 #include "preCompiler.h"
 
+/**
+ * @brief starts to replace all macro on file fp
+ * 
+ * @param fp 
+ * @param fileName 
+ * @return int 
+ */
 int replaceAllMacro(FILE *fp, char *fileName){
     char lineBuffer[MAX_LINE], *cp, macroName[MAX_MACRO_NAME];
     int counter;
@@ -36,6 +43,13 @@ int replaceAllMacro(FILE *fp, char *fileName){
     return 0;
 }
 
+/**
+ * @brief Create a New Node of macro type
+ * 
+ * @param file 
+ * @param macroName 
+ * @param node 
+ */
 void createNewNode(FILE *file, char *macroName, macroNode *node){
     int counter = 0;
     char lineBuffer[MAX_LINE];
@@ -51,6 +65,13 @@ void createNewNode(FILE *file, char *macroName, macroNode *node){
     node->next = NULL;
 }
 
+/**
+ * @brief finds if a macro name is in the macro node list
+ * 
+ * @param macroName 
+ * @param macro 
+ * @return macroNode* 
+ */
 macroNode *findMacro(char *macroName, macroNode *macro){
     macroNode *temp = macro;
     while(temp != NULL){
@@ -61,10 +82,22 @@ macroNode *findMacro(char *macroName, macroNode *macro){
     return NULL;
 } 
 
+/**
+ * @brief checks if an inputline contains a macro decleration
+ * 
+ * @param inputLine 
+ * @return char* 
+ */
 char *isMacro(char *inputLine){
     return strstr(inputLine, "macro");
 }
 
+/**
+ * @brief inserts a new macro to the macro node list
+ * 
+ * @param macro 
+ * @param newNode 
+ */
 void insertMacro(macroNode **macro, macroNode *newNode){
     macroNode *temp = *macro;
     if(*macro == NULL)
@@ -80,12 +113,24 @@ void insertMacro(macroNode **macro, macroNode *newNode){
     
 }
 
+/**
+ * @brief prints the macro to the new file created to replace the macro callback
+ * 
+ * @param macro 
+ * @param fp 
+ */
 void fprintMacro(macroNode *macro, FILE *fp){
     int i;
     for(i = 0 ; i < macro->lines ; i++)
         fprintf(fp, "%s", macro->macroContent[i]);
 }
 
+/**
+ * @brief write the first line of the file
+ * 
+ * @param fp 
+ * @param fileName 
+ */
 void writeNewFileName(FILE *fp, char *fileName){
     char *tempFileName;
     tempFileName = strstr(fileName, "/");

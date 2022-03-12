@@ -1,5 +1,20 @@
+/**
+ * @file secondRun.c
+ * @author roei daniel
+ * @brief start the second run on a file
+ */
 #include "secondRun.h"
 
+/**
+ * @brief the function will start second run, will return FALSE if found errors
+ * 
+ * @param fp 
+ * @param extFp 
+ * @param symbolTable 
+ * @param lines 
+ * @param tableSize 
+ * @return int 
+ */
 int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, int tableSize){
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
@@ -17,7 +32,7 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
                 error = 0;
             }        
         }
-        else if(!isEmptyLine(inputLine) && (!isDataDecleration(inputLine)) && (!isExternDecleration(inputLine)) && isCommentLine(inputLine)){
+        else if(!isEmptyLine(inputLine) && (!isDataDecleration(inputLine)) && (!isExternDecleration(inputLine)) && (!isCommentLine(inputLine))){
             commandLines = lineDecode(linesCounter, inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
             switch (numberOfOpperands)
             {
@@ -57,6 +72,16 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
     return error;
 }
 
+/**
+ * @brief adds an attribute to the symbol from symbol table array
+ * 
+ * @param linesCounter 
+ * @param table 
+ * @param tableSize 
+ * @param symbolName 
+ * @param attr 
+ * @return int 
+ */
 int addAttribute(int linesCounter, symbol *table, int tableSize, char *symbolName, char *attr){
     int index = findSymbolInTable(table, tableSize, symbolName);
     int attrIndex;
@@ -75,10 +100,23 @@ int addAttribute(int linesCounter, symbol *table, int tableSize, char *symbolNam
     return 1;
 }
 
+/**
+ * @brief extracts the symbol from the entry line to tempsymbol parameter
+ * 
+ * @param inputLine 
+ * @param tempSymbol 
+ * @return int 
+ */
 int extractSymbolFromEntryLine(char *inputLine, char *tempSymbol){
     return sscanf(strstr(inputLine, ENTRY_DECLERATION) + strlen(ENTRY_DECLERATION), "%s", tempSymbol);
 }
 
+/**
+ * @brief Get the Symbol From an Opperand to the tempsymbol
+ * 
+ * @param opperand 
+ * @param tempSymbol 
+ */
 void getSymbolFromOpperand(char *opperand, char *tempSymbol){
     char *ptr;
     if((ptr = strstr(opperand, LEFT_SQUARE_BRACKET))){
@@ -89,6 +127,18 @@ void getSymbolFromOpperand(char *opperand, char *tempSymbol){
         sscanf(opperand, "%s", tempSymbol);
 }
 
+/**
+ * @brief build the symbol lines to the binline array
+ * 
+ * @param linesCounter 
+ * @param fp 
+ * @param lines 
+ * @param symbolTable 
+ * @param tableSize 
+ * @param opperand 
+ * @param IC 
+ * @return int 
+ */
 int buildSymbolLines(int linesCounter, FILE *fp, binLine *lines, symbol *symbolTable, int tableSize, char *opperand, int IC){
     int symbolIndex, error = 1;
     char tempSymbol[MAX_SYMBOL_LENGTH];
@@ -110,6 +160,13 @@ int buildSymbolLines(int linesCounter, FILE *fp, binLine *lines, symbol *symbolT
     return error;             
 }
 
+/**
+ * @brief prints the use of a symbol to the ext file
+ * 
+ * @param fp 
+ * @param extSymbol 
+ * @param baseAddress 
+ */
 void printSymbolExternal(FILE *fp, symbol *extSymbol, int baseAddress){
     fprintf(fp, "%s BASE %d\n", extSymbol->symbol, baseAddress);
     fprintf(fp, "%s OFFSET %d\n\n", extSymbol->symbol, baseAddress+1);

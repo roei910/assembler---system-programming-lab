@@ -1,5 +1,16 @@
+/**
+ * @file compiler.c
+ * @author roei daniel
+ * @brief the file will handle a single .as file and run the compiler program
+ * will create files according to the lines read
+ */
 #include "compiler.h"
 
+/**
+ * @brief run compiler for a file name
+ * 
+ * @param fileName the file to be compiled
+ */
 void runProgram(char *fileName){
     FILE *fp, *extFp;
     symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
@@ -33,13 +44,18 @@ void runProgram(char *fileName){
             fclose(extFp);
         buildOutPutFiles(fileName, lines, symbolTable, symbolTableSize, ICF, DCF);
         fclose(fp);/*close .am file*/
-        /*free deallocate memory*/
+        /*free allocated memory*/
         free(symbolTable);
         free(lines);
         free(newFileName);
     }
 }
 
+/**
+ * @brief run the file through precompiler program
+ * 
+ * @param fileName the file name to be run precompiler
+ */
 void preCompiler(char *fileName){
     FILE *fp;
     char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
@@ -57,6 +73,16 @@ void preCompiler(char *fileName){
     free(newFileName);
 }
 
+/**
+ * @brief build the output files after first and second run was successfull
+ * 
+ * @param fileName file name to be created
+ * @param lines binary lines read from files
+ * @param symbolTable symbol table from the file
+ * @param symbolTableSize size of symbol table
+ * @param ICF instruction count of the read file
+ * @param DCF data count of the read file
+ */
 void buildOutPutFiles(char *fileName, binLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
     /*create object file, .ob*/
     FILE *fp;
@@ -91,6 +117,13 @@ void buildOutPutFiles(char *fileName, binLine *lines, symbol *symbolTable, int s
     free(newFileName);
 }
 
+/**
+ * @brief print an entry symbols according to the instructions
+ * 
+ * @param fp file to be written to
+ * @param symbolTable symbols read from the file
+ * @param symbolTableSize size of symbol table array
+ */
 void printSymbolEntry(FILE *fp, symbol *symbolTable, int symbolTableSize){
     int i;
     for(i = 0 ; i < symbolTableSize ; i++){
