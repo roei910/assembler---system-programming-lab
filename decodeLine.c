@@ -547,7 +547,7 @@ int isEmptyLine(char *inputLine){
  * @return int 
  */
 int isCommentLine(char *inputLine){
-    return strstr(inputLine, COMMENT_LINE_STRING);
+    return strstr(inputLine, COMMENT_LINE_STRING) != NULL;
 }
 
 /**
