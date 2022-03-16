@@ -29,6 +29,10 @@ int main(int argc, char **argv){
  */
 void startCompiler(int argc, char **argv){
     int i;
-    for(i = 1; i < argc; i++)
-        runProgram(*(argv+i));/*run each file name through compiler*/ 
+    for(i = 1; i < argc; i++){
+        if(!runProgram(*(argv+i)))/*run each file name through compiler*/
+            fprintf(stderr, "[Compiler Error]: found error/s while compiling file \"%s\"\n", *(argv+i));
+        else
+            fprintf(stdout, "[Compiler]: file \"%s\" was compiled successfully\n", *(argv+i));
+    }
 }

@@ -19,21 +19,22 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     int srcAddressing, destAddressing, numberOfOpperands;
-    int error = 1, linesCounter = 0, commandLines = 0;
+    int error = 1, linesCounter = 0, commandLines = 0, fileLines = 0;
     rewind(fp);
     while(fgets(inputLine, MAX_LINE, fp) != NULL){
+        fileLines++;
         if(isSymbolDecleration(inputLine))
             skipSymbol(inputLine);
         if(isEntryDecleration(inputLine)){
             if(extractSymbolFromEntryLine(inputLine, tempSymbol))
                 addAttribute(linesCounter, symbolTable, tableSize, tempSymbol, ENTRY_ATTRIBUTE);
             else{
-                fprintf(stderr, "[ERROR]: line:%d, couldn't extract symbol from entry line\n", linesCounter);
+                fprintf(stderr, "[ERROR]: line:%d, couldn't extract symbol from entry line\n", fileLines);
                 error = 0;
             }        
         }
         else if(!isEmptyLine(inputLine) && (!isDataDecleration(inputLine)) && (!isExternDecleration(inputLine)) && (!isCommentLine(inputLine))){
-            commandLines = lineDecode(linesCounter, inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
+            commandLines = lineDecode(fileLines, inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
             switch (numberOfOpperands)
             {
                 case 1:
@@ -41,7 +42,7 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
                     if(destAddressing == 0)
                         linesCounter++;
                     if(((destAddressing) == 1) || ((destAddressing) == 2)){/**/
-                        if(!buildSymbolLines(linesCounter, extFp, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter))
+                        if(!buildSymbolLines(fileLines, extFp, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter))
                             error = 0;
                         linesCounter+=2;
                     }
@@ -51,14 +52,14 @@ int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, i
                     if(srcAddressing == 0)
                         linesCounter++;
                     if((srcAddressing == 1) || (srcAddressing == 2)){
-                        if(!buildSymbolLines(linesCounter, extFp, lines+linesCounter, symbolTable, tableSize, src, 100+linesCounter))
+                        if(!buildSymbolLines(fileLines, extFp, lines+linesCounter, symbolTable, tableSize, src, 100+linesCounter))
                             error = 0;  
                         linesCounter+=2;
                     }
                     if(destAddressing == 0)
                         linesCounter++;
                     if(((destAddressing) == 1) || ((destAddressing) == 2)){/**/
-                        if(!buildSymbolLines(linesCounter, extFp, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter))
+                        if(!buildSymbolLines(fileLines, extFp, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter))
                             error = 0;
                         linesCounter+=2;
                     }
