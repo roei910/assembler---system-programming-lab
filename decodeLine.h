@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include "constants.h"
-#include "baseConvertion.h"
+#include "binaryLine.h"
 
 #if !defined(DECODE_LINE_HEADER)
 #define DECODE_LINE_HEADER

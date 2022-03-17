@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdarg.h>
 #include "constants.h"
 
 #if !defined(BINARY_LINE_HEADER)
@@ -32,6 +35,7 @@ typedef struct binaryLine{
     } machineCode;
 } BinaryLine;
 
-
+void printWord(FILE *, BinaryLine);
+void createBinaryLine(BinaryLine *, int, ...);
 
 #endif
