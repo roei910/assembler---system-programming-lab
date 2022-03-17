@@ -3,16 +3,11 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <math.h>
-
-#if !defined(CONSTANTS_HEADER)
-#define CONSTANTS_HEADER
 #include "constants.h"
-#endif
-
-#if !defined(BASE_CONVERTION_HEADER)
-#define BASE_CONVERTION_HEADER
 #include "baseConvertion.h"
-#endif
+
+#if !defined(DECODE_LINE_HEADER)
+#define DECODE_LINE_HEADER
 
 #define MAX_OPPERAND_LENGTH 30
 #define MAX_COMMAND_NAME_LENGTH 20
@@ -60,7 +55,7 @@ int checkValidCommandTwoOpperands(char *, char *, int *, char *, int *);
 int checkValidCommandOneOpperand(char *, char *, int *);
 int getFunct(char *);
 int getOpcode(char *);
-int buildMachineCodeLines(int, binLine *, int, symbol *, char *, int, ...);
+int buildMachineCodeLines(int, BinaryLine *, int, symbol *, char *, int, ...);
 int getNumberFromOpperand(char *);
 int getRegFromOpperand(char *);
 int checkValidSymbol(char *);
@@ -73,3 +68,5 @@ int findSymbolInTable(symbol *, int, char *);
 int isEmptyLine(char *);
 int isCommentLine(char *);
 int isEntryDecleration(char *);
+
+#endif

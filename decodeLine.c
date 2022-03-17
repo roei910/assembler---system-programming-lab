@@ -316,7 +316,7 @@ int getOpcode(char *command){
  * @param ... 
  * @return int 
  */
-int buildMachineCodeLines(int linesCounter, binLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
+int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
     int dest, destAddressing, src, srcAddressing, linesWritten = 0;
     char *destPtr, *srcPtr;
     va_list valist;

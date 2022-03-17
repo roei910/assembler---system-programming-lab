@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#if !defined(CONSTANTS_HEADER)
-#define CONSTANTS_HEADER
 #include "constants.h"
-#endif
 
 #define MAX_MACRO_NAME 20
 #define MAX_MACRO_LENGTH 6 /*max lines for a macro decleration*/

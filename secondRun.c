@@ -15,7 +15,7 @@
  * @param tableSize 
  * @return int 
  */
-int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, binLine *lines, int tableSize){
+int startSecondRun(FILE *fp, FILE *extFp, symbol *symbolTable, BinaryLine *lines, int tableSize){
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     int srcAddressing, destAddressing, numberOfOpperands;
@@ -140,7 +140,7 @@ void getSymbolFromOpperand(char *opperand, char *tempSymbol){
  * @param IC 
  * @return int 
  */
-int buildSymbolLines(int linesCounter, FILE *fp, binLine *lines, symbol *symbolTable, int tableSize, char *opperand, int IC){
+int buildSymbolLines(int linesCounter, FILE *fp, BinaryLine *lines, symbol *symbolTable, int tableSize, char *opperand, int IC){
     int symbolIndex, error = 1;
     char tempSymbol[MAX_SYMBOL_LENGTH];
     getSymbolFromOpperand(opperand, tempSymbol);

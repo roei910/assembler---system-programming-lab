@@ -12,7 +12,7 @@
  * @param fp file pointer
  * @param line the binary line to be written
  */
-void printWord(FILE *fp, binLine line){
+void printWord(FILE *fp, BinaryLine line){
     fprintf(fp, "A%x-B%x-C%x-D%x-E%x\n", line.machineCode.wordPrint.A, line.machineCode.wordPrint.B,
         line.machineCode.wordPrint.C, line.machineCode.wordPrint.D, line.machineCode.wordPrint.E);
 }
@@ -27,7 +27,7 @@ void printWord(FILE *fp, binLine line){
  * @param numOfArguments amount of arguments to the function
  * @param ... according to the desired binary line will receive arguments
  */
-void createBinaryLine(binLine *line, int numOfArguments, ...){
+void createBinaryLine(BinaryLine *line, int numOfArguments, ...){
     int ARE;
     va_list valist;
     va_start(valist, numOfArguments);

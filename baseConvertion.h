@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdarg.h>
-
-#if !defined(CONSTANTS_HEADER)
-#define CONSTANTS_HEADER
 #include "constants.h"
-#endif
+#include "binaryLine.h"
 
-void printWord(FILE *, binLine);
-void createBinaryLine(binLine *, int, ...);
+#if !defined(BASE_CONVERTION_HEADER)
+#define BASE_CONVERTION_HEADER
+
+void printWord(FILE *, BinaryLine);
+void createBinaryLine(BinaryLine *, int, ...);
+
+#endif

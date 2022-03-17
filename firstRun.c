@@ -11,7 +11,7 @@
  * @param tableSize 
  * @return int 
  */
-int startFirstRun(FILE *fp, symbol *symbolTable, binLine *lines, int *ICF, int *DCF, int *tableSize){
+int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, int *DCF, int *tableSize){
     int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, line = 0;
     int srcAddressing, destAddressing, numberOfOpperands;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
@@ -120,7 +120,7 @@ void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int ba
  * @param lines 
  * @return int 
  */
-int extractDataFromLine(char *inputLine, binLine *lines){
+int extractDataFromLine(char *inputLine, BinaryLine *lines){
     int tempNumber, countLines = 0;
     char tempC;
     char *ptr, tempLine[MAX_LINE];
@@ -164,7 +164,7 @@ int extractDataFromLine(char *inputLine, binLine *lines){
  * @param destAddressing 
  * @return int 
  */
-int buildCodeLines(int linesCounter, int numberOfOpperands, binLine *lines, symbol *symbolTable, int symbolCount,
+int buildCodeLines(int linesCounter, int numberOfOpperands, BinaryLine *lines, symbol *symbolTable, int symbolCount,
     char *command, char *src, int srcAddressing, char *dest, int destAddressing){
     switch (numberOfOpperands)
     {

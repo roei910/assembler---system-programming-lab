@@ -14,7 +14,7 @@
 int runProgram(char *fileName){
     FILE *fp, *extFp;
     symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
-    binLine *lines = (binLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(binLine));
+    BinaryLine *lines = (BinaryLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(BinaryLine));
     char *extFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     char *amFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     int ICF, DCF, symbolTableSize, error = 1;
@@ -96,7 +96,7 @@ int preCompiler(char *fileName){
  * @param ICF instruction count of the read file
  * @param DCF data count of the read file
  */
-int buildOutPutFiles(char *fileName, binLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
+int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
     /*create object file, .ob*/
     FILE *fp;
     char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
