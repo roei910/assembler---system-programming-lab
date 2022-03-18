@@ -7,6 +7,15 @@
 
 /**
  * @brief decode a single line from the file and return a number of lines to be added to the file
+ * 
+ * @param line 
+ * @param inputLine 
+ * @param command 
+ * @param src 
+ * @param dest 
+ * @param srcAddressing 
+ * @param destAddressing 
+ * @param numberOfOpperands 
  * @return int number of lines to be written
  */
 int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
@@ -63,6 +72,11 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
 
 /**
  * @brief return the number of opperands in a single input line
+ * 
+ * @param inputLine 
+ * @param command 
+ * @param src 
+ * @param dest 
  * @return int number of opperands
  */
 int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest){

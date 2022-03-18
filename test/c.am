@@ -1,9 +1,0 @@
-; file c.am
-
-                inc     r6
-                mov     r3, W
-
-                add r1, r3
-                
-                inc     r6
-                mov     r3, W

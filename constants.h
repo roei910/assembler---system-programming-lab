@@ -1,8 +1,5 @@
 #if !defined(CONSTANTS_HEADER)
 #define CONSTANTS_HEADER
-/*
-#include <stdlib.h>
-#include "binaryLine.h"*/
 
 #define MAX_LINE 81
 #define MAX_SYMBOL_LENGTH 20
@@ -29,31 +26,5 @@ typedef struct{/*represents a row in the symbol table*/
     int attributeCount;
     char attributes[MAX_ATTRIBUTES][MAX_ATTRIBUTE_NAME_LENGTH];
 }symbol;
-/*
-typedef struct{
-    union MachineCode{
-        unsigned int code:SIZE_OF_WORD;
-        
-        struct 
-        {
-            unsigned int addressingDest:2;
-            unsigned int dest:4;
-            unsigned int addressingSrc:2;
-            unsigned int src:4;
-            unsigned int funct:4;
-            unsigned int A:4;
-        }word;
-        
-        struct 
-        {
-            unsigned int E:4;
-            unsigned int D:4;
-            unsigned int C:4;
-            unsigned int B:4;
-            unsigned int A:4;
-        }wordPrint;
-
-    } machineCode;
-}binLine;*/
 
 #endif

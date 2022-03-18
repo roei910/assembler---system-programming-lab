@@ -6,8 +6,7 @@
 
 #if !defined(BINARY_LINE_HEADER)
 #define BINARY_LINE_HEADER
-/*
-typedef struct binaryLine BinaryLine;*/
+
 /**
  * @brief binary Line struct contains the binary code for a line 
  */
@@ -23,7 +22,7 @@ typedef struct binaryLine{
             unsigned int funct:4;
             unsigned int A:4;
         }word;
-        
+
         struct 
         {
             unsigned int E:4;
@@ -35,7 +34,24 @@ typedef struct binaryLine{
     } machineCode;
 } BinaryLine;
 
+/**
+ * @brief print a binary word to a file fp
+ * 
+ * @param fp file pointer
+ * @param line the binary line to be written
+ */
 void printWord(FILE *, BinaryLine);
+
+/**
+ * @brief Create Binary Line according to the desired type of command
+ * 2 arguments - pass an index value of ARE and OPCODE
+ * 4 arguments - pass a whole line only with destination opperands
+ * 6 arguments - pass a whole line with destination and source opperands
+ * 
+ * @param line the binary line array to receive the binary lines
+ * @param numOfArguments amount of arguments to the function
+ * @param ... according to the desired binary line will receive arguments
+ */
 void createBinaryLine(BinaryLine *, int, ...);
 
 #endif
