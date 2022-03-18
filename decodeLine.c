@@ -428,6 +428,8 @@ int getRegFromOpperand(char *opperand){
     char *ptr;
     int reg;
     ptr = strstr(opperand, REGISTER_R_SYMBOL);
+    if(ptr == NULL)
+        return -1;
     reg = getNumberFromOpperand(ptr);
     if(reg >= 0 && reg <= 15)
         return reg;
@@ -442,6 +444,10 @@ int getRegFromOpperand(char *opperand){
  */
 int checkValidSymbol(char *symbol){
     int countAlpha = 0;
+    if(getRegFromOpperand(symbol) != -1)
+        return 0;
+    if(getOpcode(symbol) != -1)
+        return 0;
     while(*symbol != '\0'){
         if(!isalnum(*symbol))
             return 0;

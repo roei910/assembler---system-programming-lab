@@ -3,6 +3,7 @@
         "preassembler.h": "c",
         "compiler.h": "c",
         "stdio.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "secondrun.h": "c"
     }
 }

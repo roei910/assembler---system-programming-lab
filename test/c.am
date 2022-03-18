@@ -1,14 +1,12 @@
-; file c.as
+; file c.am
 
 Hello:         inc r6
 Hello:         inc r6
-                macro   m1
+
                 inc     r6
                 mov     r3, W
-                endm
-
-                m1
 
                 add r1, r3
                 
-                m1
+                inc     r6
+                mov     r3, W
