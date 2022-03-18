@@ -12,7 +12,7 @@
  * @param fileName the file to be compiled
  */
 int runProgram(char *fileName){
-    FILE *fp, *extFp;
+    FILE *fp;
     symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
     BinaryLine *lines = (BinaryLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(BinaryLine));
     char *extFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
@@ -33,22 +33,15 @@ int runProgram(char *fileName){
             /*create extern file, .ext*/
             strcpy(extFileName, fileName);
             strcat(extFileName, ".ext");
-            if(!(extFp = fopen(extFileName, "w"))){
-                fprintf(stderr, "[ERROR]: creating .ext file %s\n", extFileName);
+
+            if(!startSecondRun(fp, extFileName, symbolTable, lines, symbolTableSize)){
+                fprintf(stderr, "[Second Run Error]: please check error/s from file \"%s\"\n", amFileName);
                 error = 0;
             }
             else{
-                if(!startSecondRun(fp, extFp, symbolTable, lines, symbolTableSize)){
-                    fprintf(stderr, "[Second Run Error]: please check error/s from file \"%s\"\n", amFileName);
+                if(!buildOutPutFiles(fileName, lines, symbolTable, symbolTableSize, ICF, DCF))
                     error = 0;
-                }
-                else{
-                    fclose(extFp);
-                    if(!buildOutPutFiles(fileName, lines, symbolTable, symbolTableSize, ICF, DCF))
-                        error = 0;
-                }
-            }
-            
+            }      
         }
         /*close .am file*/
         fclose(fp);

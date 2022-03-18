@@ -16,7 +16,7 @@
  * @param tableSize 
  * @return int 
  */
-int startSecondRun(FILE *, FILE *, symbol *, BinaryLine *, int);
+int startSecondRun(FILE *, char *, symbol *, BinaryLine *, int);
 
 /**
  * @brief adds an attribute to the symbol from symbol table array
@@ -59,7 +59,7 @@ void getSymbolFromOpperand(char *, char *);
  * @param IC 
  * @return int 
  */
-int buildSymbolLines(int, FILE *, BinaryLine *, symbol *, int , char *, int);
+int buildSymbolLines(int, FILE **, char *, BinaryLine *, symbol *, int , char *, int);
 
 /**
  * @brief prints the use of a symbol to the ext file
