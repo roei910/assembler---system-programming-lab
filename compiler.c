@@ -25,6 +25,7 @@ int runProgram(char *fileName){
     strcat(amFileName, ".am");
     
     if((fp = fopen(amFileName, "r"))){ /*open .am file*/
+        printf("starting first run\n");
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
             fprintf(stderr, "[First Run Error]: please check error/s\n");
             error = 0;
@@ -34,6 +35,7 @@ int runProgram(char *fileName){
             strcpy(extFileName, fileName);
             strcat(extFileName, ".ext");
 
+            printf("starting second run\n");
             if(!startSecondRun(fp, extFileName, symbolTable, lines, symbolTableSize)){
                 fprintf(stderr, "[Second Run Error]: please check error/s from file \"%s\"\n", amFileName);
                 error = 0;

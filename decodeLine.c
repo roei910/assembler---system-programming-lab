@@ -414,7 +414,8 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, 
  */
 int getNumberFromOpperand(char *opperand){
     int number=0;
-    sscanf(opperand+1, "%d", &number);
+    if(sscanf(opperand+1, "%d", &number) == 0) 
+        return -1;
     return number;
 }
 

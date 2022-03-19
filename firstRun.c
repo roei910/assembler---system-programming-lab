@@ -126,6 +126,7 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines){
     char *ptr, tempLine[MAX_LINE];
     if(isStringLine(inputLine)){/*.string*/
         strcpy(tempLine, strstr(inputLine, QUOTATION_SYMBOL) + 1);
+        ptr = tempLine;
         while((*ptr) != QUOTATION_SYMBOL_CHAR){
             tempC = *(ptr++);
             if(tempC == '"')
