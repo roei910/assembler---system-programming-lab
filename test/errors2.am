@@ -1,4 +1,4 @@
-; second run errors
+; file errors2.am
 EXIST: .string "this label will used for comparison"
 
 mov notHere, r1

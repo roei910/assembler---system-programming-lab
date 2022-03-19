@@ -1,4 +1,4 @@
-;errors check - first pass phase
+;errors check - first run
 
 ;label errors
 myLabel: .string "This should be fine"

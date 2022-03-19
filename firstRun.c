@@ -44,9 +44,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             IC += addedLines;
         }
         else if(isExternDecleration(inputLine)){
-            sscanf(inputLine, "%s %s", tempSymbol, tempSymbol);
-            if(!checkValidSymbol(tempSymbol))/*check symbol is valid*/
+            if(symbolDecleration)
+                skipSymbol(inputLine);
+            sscanf(inputLine+strlen(EXTERN_DECLERATION), " %s", tempSymbol);
+            if(!checkValidSymbol(tempSymbol)){/*check symbol is valid*/
+                fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", line, tempSymbol);
                 error = 0;
+            }
             if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                 createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
             else{
@@ -152,10 +156,10 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
         strcpy(tempLine, strstr(inputLine, DATA_DECLERATION) + 5);
         ptr = strtok(tempLine, COMMA_SYMBOL);
         sscanf(ptr, " %c", &tempC);
-        if((!isalnum(tempC))){
-            fprintf(stderr, "[ERROR]: line:%d, data incorrect / missing\n", line);
+        /*if((!isalnum(tempC))){
+            fprintf(stderr, "[ERROR]: line:%d, XXdata incorrect / missing\n", line);
             return 0;
-        }
+        }*/
         while(ptr){
             if(sscanf(ptr, "%d", &tempNumber) == 0){
                 fprintf(stderr, "[ERROR]: line:%d, data incorrect / missing\n", line);

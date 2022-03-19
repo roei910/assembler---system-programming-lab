@@ -90,7 +90,6 @@ int addAttribute(int linesCounter, symbol *table, int tableSize, char *symbolNam
     int index = findSymbolInTable(table, tableSize, symbolName);
     int attrIndex;
     if(index == -1){
-        printf("\n");
         fprintf(stderr, "[ERROR]: line:%d, in entry line, symbol not found in symbol table\n", linesCounter);
         return 0;
     }
