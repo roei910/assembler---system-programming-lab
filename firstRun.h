@@ -47,9 +47,10 @@ void createSymbol(symbol *, int, char *, char *, int, int);
  * 
  * @param inputLine 
  * @param lines 
+ * @param line number of line currently read for errors
  * @return int 
  */
-int extractDataFromLine(char *, BinaryLine *);
+int extractDataFromLine(char *, BinaryLine *, int line);
 
 /**
  * @brief build machine code lines to binLine array according to command type

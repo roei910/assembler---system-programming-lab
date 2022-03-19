@@ -37,7 +37,9 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
                 }
             }
             /*7 - add data as bin lines, add DC count according to lines created*/
-            addedLines = extractDataFromLine(inputLine, lines+IC-100);
+            addedLines = extractDataFromLine(inputLine, lines+IC-100, line);
+            if(addedLines == 0)
+                error = 0;
             DC += addedLines;
             IC += addedLines;
         }
@@ -120,12 +122,17 @@ void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int ba
  * @param lines 
  * @return int 
  */
-int extractDataFromLine(char *inputLine, BinaryLine *lines){
+int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
     int tempNumber, countLines = 0;
     char tempC;
     char *ptr, tempLine[MAX_LINE];
     if(isStringLine(inputLine)){/*.string*/
-        strcpy(tempLine, strstr(inputLine, QUOTATION_SYMBOL) + 1);
+        ptr =  strstr(inputLine, QUOTATION_SYMBOL);
+        if(ptr == NULL){
+            fprintf(stderr, "[ERROR]: line:%d, string is incorrect / missing\n", line);
+            return 0;
+        }
+        strcpy(tempLine, ptr + 1);
         ptr = tempLine;
         while((*ptr) != QUOTATION_SYMBOL_CHAR){
             tempC = *(ptr++);
@@ -133,6 +140,10 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines){
                 tempC = 0;
             createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempC);
             countLines++;
+            if(*ptr == '\n'){
+                fprintf(stderr, "[ERROR]: line:%d, string is incorrect\n", line);
+                return 0;
+            }
         }
         createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, 0);
             countLines++;
@@ -140,8 +151,16 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines){
     else{/*.data*/
         strcpy(tempLine, strstr(inputLine, DATA_DECLERATION) + 5);
         ptr = strtok(tempLine, COMMA_SYMBOL);
+        sscanf(ptr, " %c", &tempC);
+        if((!isalnum(tempC))){
+            fprintf(stderr, "[ERROR]: line:%d, data incorrect / missing\n", line);
+            return 0;
+        }
         while(ptr){
-            sscanf(ptr, "%d", &tempNumber);
+            if(sscanf(ptr, "%d", &tempNumber) == 0){
+                fprintf(stderr, "[ERROR]: line:%d, data incorrect / missing\n", line);
+                return 0;
+            }
             ptr = strtok(NULL, COMMA_SYMBOL);
             createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempNumber);
             countLines++;
