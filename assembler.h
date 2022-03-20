@@ -17,7 +17,7 @@ void startAssembler(int, char **);
 /**
  * @brief run assembler for a file name, returns true for successfull run
  * 
- * @param fileName the file to be compiled
+ * @param fileName the file to be assembled
  */
 int runProgram(char *);
 

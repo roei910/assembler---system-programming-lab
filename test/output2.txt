@@ -1,0 +1,3 @@
+[ERROR]: file not found: test/input2.as.as
+[Assembler Error]: found error/s in file "test/input2.as"
+
