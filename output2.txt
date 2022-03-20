@@ -1,0 +1,4 @@
+[ERROR]: line:4, couldn't find symbol "LIST" in the symbol table
+[ERROR]: line:4, in entry line, symbol not found in symbol table
+[Second Run Error]: please check error/s from file "test/input3.am"
+[Assembler Error]: found error/s while compiling file "test/input3"

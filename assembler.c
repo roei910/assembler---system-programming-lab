@@ -31,9 +31,9 @@ void startAssembler(int argc, char **argv){
     int i;
     for(i = 1; i < argc; i++){
         if(!runProgram(*(argv+i)))/*run each file name through assembler*/
-            fprintf(stdout, "[Assembler Error]: found error/s while compiling file \"%s\"\n", *(argv+i));
+            fprintf(stdout, "[Assembler Error]: found error/s while compiling file \"%s\"\n\n", *(argv+i));
         else
-            fprintf(stdout, "[Assembler]: file \"%s\" was compiled successfully\n", *(argv+i));
+            fprintf(stdout, "[Assembler]: file \"%s\" was compiled successfully\n\n", *(argv+i));
     }
 }
 
