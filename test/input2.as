@@ -15,6 +15,7 @@ inc:         inc r6
 cmp #1, #1, #1
 mov A, r1, r2
 mov A, r1 r2 
+mov A r1, r2 
 cmp A, r1, r2
 add A, r0, r1
 sub #3, r1, r5

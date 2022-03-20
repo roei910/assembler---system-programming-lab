@@ -75,15 +75,19 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
  * @return int number of opperands
  */
 int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest, int line){
-    char opperands[2*MAX_OPPERAND_LENGTH], *ptr, inputLineCpy[MAX_LINE];
-    int countOpp, numOfopp;
+    char opperands[2*MAX_OPPERAND_LENGTH], *ptr, inputLineCpy[MAX_LINE], tempC;
+    int countOpp, numOfopp, flag = 0;
     strcpy(inputLineCpy, inputLine);
     if(!(countOpp = sscanf(inputLine, "%s %s", command, opperands)))
         return 0;/*couldnt find a command*/
     if(countOpp == 2){/*there is at least 1 opperand*/
         ptr = strtok(strstr(inputLineCpy, command) + strlen(command), COMMA_SYMBOL);
-        if(sscanf(ptr, "%s", src) == -1){
+        if((flag = sscanf(ptr, "%s %c", src, &tempC)) == -1){
             fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
+            return -1;
+        }
+        if(flag == 2){
+            fprintf(stderr, "[ERROR]: line:%d, missing comma / illegal opperand\n", line);
             return -1;
         }
         if(ptr != NULL){
@@ -93,13 +97,18 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest,
                 countOpp = 1;
             }
             else{
-                if(sscanf(ptr, " %s", dest) == -1){
-                    fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
+                if(sscanf(ptr, " %s %c", dest, &tempC) == -1){
+                    fprintf(stderr, "[ERROR]: line:%d, missing comma\n", line);
+                    return -1;
+                }
+                if(flag == 2){
+                    fprintf(stderr, "[ERROR]: line:%d, missing comma / illegal opperand\n", line);
                     return -1;
                 }
                 ptr = strtok(NULL, COMMA_SYMBOL);
-                if(ptr != NULL)
-                    return -1;
+                if(ptr != NULL){
+                    countOpp++;
+                }
             }
         }
     }
