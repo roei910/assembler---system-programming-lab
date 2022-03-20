@@ -2,6 +2,7 @@
 #include "decodeLine.h"
 #include "binaryLine.h"
 #include "constants.h"
+#include "symbol.h"
 
 #if !defined(SECOND_RUN_HEADER)
 #define SECOND_RUN_HEADER
@@ -16,7 +17,7 @@
  * @param tableSize size of symbol table
  * @return int 
  */
-int startSecondRun(FILE *, char *, symbol *, BinaryLine *, int);
+int startSecondRun(FILE *, char *, Symbol *, BinaryLine *, int);
 
 /**
  * @brief adds an attribute to the symbol from symbol table array
@@ -28,7 +29,7 @@ int startSecondRun(FILE *, char *, symbol *, BinaryLine *, int);
  * @param attr attribute to add
  * @return int True for successfull, False for fail in adding attribute
  */
-int addAttribute(int, symbol *, int, char *, char *);
+int addAttribute(int, Symbol *, int, char *, char *);
 
 /**
  * @brief extracts the symbol from the entry line to tempsymbol parameter
@@ -59,7 +60,7 @@ void getSymbolFromOpperand(char *, char *);
  * @param IC instruction count for the assembly file
  * @return int 
  */
-int buildSymbolLines(int, FILE **, char *, BinaryLine *, symbol *, int , char *, int);
+int buildSymbolLines(int, FILE **, char *, BinaryLine *, Symbol *, int , char *, int);
 
 /**
  * @brief prints the use of a symbol to the ext file
@@ -68,6 +69,6 @@ int buildSymbolLines(int, FILE **, char *, BinaryLine *, symbol *, int , char *,
  * @param extSymbol the symbol to be printed to file
  * @param baseAddress base address for symbol use in assembly file
  */
-void printSymbolExternal(FILE *, symbol *, int);
+void printSymbolExternal(FILE *, Symbol *, int);
 
 #endif

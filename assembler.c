@@ -28,7 +28,7 @@ void startAssembler(int argc, char **argv){
 
 int runProgram(char *fileName){
     FILE *fp;
-    symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
+    Symbol *symbolTable = createSymbolArray(MAX_SYMBOLS);
     BinaryLine *lines = (BinaryLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(BinaryLine));
     char *extFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     char *amFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
@@ -38,7 +38,6 @@ int runProgram(char *fileName){
         return 0;
     strcpy(amFileName, fileName);
     strcat(amFileName, ".am");
-    
     if((fp = fopen(amFileName, "r"))){ /*open .am file*/
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
             fprintf(stdout, "[First Run Error]: please check error/s in .am file\n");
@@ -88,7 +87,7 @@ int preAssembler(char *fileName){
     return error;
 }
 
-int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
+int buildOutPutFiles(char *fileName, BinaryLine *lines, Symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
     /*create object file, .ob*/
     FILE *fp;
     char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
@@ -125,10 +124,12 @@ int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int
     return error;
 }
 
-void printSymbolEntry(FILE *fp, symbol *symbolTable, int symbolTableSize){
+void printSymbolEntry(FILE *fp, Symbol *symbolTable, int symbolTableSize){
     int i;
+    Symbol *tempSymbol;
     for(i = 0 ; i < symbolTableSize ; i++){
-        if(!strcmp((symbolTable+i)->attributes[1], ENTRY_ATTRIBUTE))
-            fprintf(fp, "%s,%d,%d\n", (symbolTable+i)->symbol, (symbolTable+i)->baseAddress, (symbolTable+i)->offset);
+        tempSymbol = getSymbolAtIndex(symbolTable, i);
+        if(!strcmp(getAttributesLine(tempSymbol, 1), ENTRY_ATTRIBUTE))
+            fprintf(fp, "%s,%d,%d\n", getSymbolName(tempSymbol), getBaseAddress(tempSymbol), getOffset(tempSymbol));
     }
 }

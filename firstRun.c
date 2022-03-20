@@ -6,7 +6,7 @@
  */
 #include "firstRun.h"
 
-int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, int *DCF, int *tableSize){
+int startFirstRun(FILE *fp, Symbol *symbolTable, BinaryLine *lines, int *ICF, int *DCF, int *tableSize){
     int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, fileLines = 0;
     int srcAddressing, destAddressing, numberOfOpperands;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
@@ -103,14 +103,6 @@ int isStringLine(char *inputLine){
     return 0;
 }
 
-void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int base, int offset){
-    strcpy((table + (index))->symbol, symbolName);
-    (table+index)->baseAddress = base;
-    (table+index)->offset = offset;
-    strcpy(((table+index)->attributes)[0], attr);
-    ((table+index)->attributeCount) = 1;
-}
-
 int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
     int tempNumber, countLines = 0, flag = 0;
     char tempC;
@@ -171,16 +163,16 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
     return countLines;
 }
 
-int buildCodeLines(int linesCounter, int numberOfOpperands, BinaryLine *lines, symbol *symbolTable, int symbolCount,
+int buildCodeLines(int linesCounter, int numberOfOpperands, BinaryLine *lines, Symbol *symbolTable, int symbolCount,
     char *command, char *src, int srcAddressing, char *dest, int destAddressing){
     switch (numberOfOpperands)
     {
         case 0:
-            return buildMachineCodeLines(linesCounter ,lines, symbolCount, symbolTable, command, 0);
+            return buildMachineCodeLines(linesCounter ,lines, command, 0);
         case 1:
-            return buildMachineCodeLines(linesCounter ,lines, symbolCount, symbolTable, command, 2, dest, destAddressing);
+            return buildMachineCodeLines(linesCounter ,lines, command, 2, dest, destAddressing);
         case 2:
-            return buildMachineCodeLines(linesCounter ,lines, symbolCount, symbolTable, command, 4, src, srcAddressing, dest, destAddressing);
+            return buildMachineCodeLines(linesCounter ,lines, command, 4, src, srcAddressing, dest, destAddressing);
     }
     return 0;
 }

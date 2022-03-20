@@ -247,7 +247,7 @@ int getOpcode(char *command){
     return -1;
 }
 
-int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
+int buildMachineCodeLines(int linesCounter, BinaryLine *lines, char *command, int arguments, ...){
     int dest, destAddressing, src, srcAddressing, linesWritten = 0;
     char *destPtr, *srcPtr;
     va_list valist;
@@ -402,11 +402,14 @@ int checkDecleration(char *inputLine, char *decleration){
     return 0;
 }
 
-int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
+int findSymbolInTable(Symbol *table, int tableSize, char *symbolName){
     int i;
-    for(i = 0 ; i < tableSize ; i++)
-        if(!strcmp((table+i)->symbol, symbolName))
+    Symbol *symbolPtr;
+    for(i = 0 ; i < tableSize ; i++){
+        symbolPtr = getSymbolAtIndex(table, i);
+        if(!strcmp(getSymbolName(symbolPtr), symbolName))
             return i;
+    }
     return -1;
 }
 

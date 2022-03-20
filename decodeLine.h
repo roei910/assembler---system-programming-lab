@@ -5,6 +5,7 @@
 #include <math.h>
 #include "constants.h"
 #include "binaryLine.h"
+#include "symbol.h"
 
 #if !defined(DECODE_LINE_HEADER)
 #define DECODE_LINE_HEADER
@@ -159,14 +160,12 @@ int getOpcode(char *);
  * 
  * @param linesCounter number of line in file for errors
  * @param lines binary lines
- * @param symbolCount symbol table size
- * @param symbolTable symbol table
  * @param command name of command
  * @param arguments number of arguments
  * @param ... 
  * @return int 
  */
-int buildMachineCodeLines(int, BinaryLine *, int, symbol *, char *, int, ...);
+int buildMachineCodeLines(int, BinaryLine *, char *, int, ...);
 
 /**
  * @brief Get the Number From an Opperand
@@ -241,7 +240,7 @@ int checkDecleration(char *, char *);
  * @param symbolName name of symbol to be found
  * @return int 
  */
-int findSymbolInTable(symbol *, int, char *);
+int findSymbolInTable(Symbol *, int, char *);
 
 /**
  * @brief returns true if an inputline is an empty line

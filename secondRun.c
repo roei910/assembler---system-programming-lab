@@ -5,7 +5,7 @@
  */
 #include "secondRun.h"
 
-int startSecondRun(FILE *fp, char *extFileName, symbol *symbolTable, BinaryLine *lines, int tableSize){
+int startSecondRun(FILE *fp, char *extFileName, Symbol *symbolTable, BinaryLine *lines, int tableSize){
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     int srcAddressing, destAddressing, numberOfOpperands;
@@ -66,20 +66,21 @@ int startSecondRun(FILE *fp, char *extFileName, symbol *symbolTable, BinaryLine 
     return error;
 }
 
-int addAttribute(int linesCounter, symbol *table, int tableSize, char *symbolName, char *attr){
+int addAttribute(int linesCounter, Symbol *table, int tableSize, char *symbolName, char *attr){
     int index = findSymbolInTable(table, tableSize, symbolName);
     int attrIndex;
+    Symbol *symbolPtr = getSymbolAtIndex(table, index);
     if(index == -1){
         fprintf(stdout, "[ERROR]: line:%d, in entry line, symbol not found in symbol table\n", linesCounter);
         return 0;
     }
-    attrIndex = (table+index)->attributeCount;
+    attrIndex = getAttributesCount(symbolPtr);
     if(attrIndex >= MAX_ATTRIBUTES){
         fprintf(stdout, "[ERROR]: line:%d, max attributes for symbol \"%s\"\n", linesCounter, symbolName);
         return 0;
     }
-    strcpy(((table+index)->attributes)[attrIndex], attr);
-    ((table+index)->attributeCount)++;
+    strcpy(getAttributesLine(symbolPtr, attrIndex), attr);
+    increaseAttributeCount(symbolPtr);
     return 1;
 }
 
@@ -97,34 +98,36 @@ void getSymbolFromOpperand(char *opperand, char *tempSymbol){
         sscanf(opperand, "%s", tempSymbol);
 }
 
-int buildSymbolLines(int linesCounter, FILE **fp, char *extFileName, BinaryLine *lines, symbol *symbolTable, int tableSize, char *opperand, int IC){
+int buildSymbolLines(int linesCounter, FILE **fp, char *extFileName, BinaryLine *lines, Symbol *symbolTable, int tableSize, char *opperand, int IC){
     int symbolIndex, error = 1;
     char tempSymbol[MAX_SYMBOL_LENGTH];
+    Symbol *symbolPtr;
     getSymbolFromOpperand(opperand, tempSymbol);
     symbolIndex = findSymbolInTable(symbolTable, tableSize, tempSymbol);
+    symbolPtr = getSymbolAtIndex(symbolTable, symbolIndex);
     if(symbolIndex == -1){
         fprintf(stdout, "[ERROR]: line:%d, couldn't find symbol \"%s\" in the symbol table\n", linesCounter, tempSymbol);
         error = 0;
     }
-    if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE)){
-        createBinaryLine(lines, 2, MACHINE_CODE_E, (symbolTable+symbolIndex)->baseAddress);
-        createBinaryLine(lines+1, 2, MACHINE_CODE_E, (symbolTable+symbolIndex)->offset);
+    if(!strcmp(getAttributesLine(symbolPtr, 0), EXTERNAL_ATTRIBUTE)){
+        createBinaryLine(lines, 2, MACHINE_CODE_E, getBaseAddress(symbolPtr));
+        createBinaryLine(lines+1, 2, MACHINE_CODE_E, getOffset(symbolPtr));
         if(*fp == NULL){
             if(!(*fp = fopen(extFileName, "w"))){
                 fprintf(stdout, "[ERROR]: creating .ext file %s\n", extFileName);
                 error = 0;
             }  
         }
-        printSymbolExternal(*fp, symbolTable+symbolIndex, IC);
+        printSymbolExternal(*fp, symbolPtr, IC);
     }
     else{
-        createBinaryLine(lines, 2, MACHINE_CODE_R, (symbolTable+symbolIndex)->baseAddress);
-        createBinaryLine(lines+1, 2, MACHINE_CODE_R, (symbolTable+symbolIndex)->offset);
+        createBinaryLine(lines, 2, MACHINE_CODE_R, getBaseAddress(symbolPtr));
+        createBinaryLine(lines+1, 2, MACHINE_CODE_R, getOffset(symbolPtr));
     }
     return error;             
 }
 
-void printSymbolExternal(FILE *fp, symbol *extSymbol, int baseAddress){
-    fprintf(fp, "%s BASE %d\n", extSymbol->symbol, baseAddress);
-    fprintf(fp, "%s OFFSET %d\n\n", extSymbol->symbol, baseAddress+1);
+void printSymbolExternal(FILE *fp, Symbol *extSymbol, int baseAddress){
+    fprintf(fp, "%s BASE %d\n", getSymbolName(extSymbol), baseAddress);
+    fprintf(fp, "%s OFFSET %d\n\n", getSymbolName(extSymbol), baseAddress+1);
 }

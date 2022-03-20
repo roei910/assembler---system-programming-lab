@@ -2,6 +2,7 @@
 #include "preAssembler.h"
 #include "firstRun.h"
 #include "secondRun.h"
+#include "symbol.h"
 
 #if !defined(ASSEMBLER_HEADER)
 #define ASSEMBLER_HEADER
@@ -39,7 +40,7 @@ int preAssembler(char *);
  * @param ICF instruction count of the read file
  * @param DCF data count of the read file
  */
-int buildOutPutFiles(char *, BinaryLine *, symbol *, int, int, int);
+int buildOutPutFiles(char *, BinaryLine *, Symbol *, int, int, int);
 
 /**
  * @brief print an entry symbols according to the instructions
@@ -48,6 +49,6 @@ int buildOutPutFiles(char *, BinaryLine *, symbol *, int, int, int);
  * @param symbolTable symbols read from the file
  * @param symbolTableSize size of symbol table array
  */
-void printSymbolEntry(FILE *, symbol *, int);
+void printSymbolEntry(FILE *, Symbol *, int);
 
 #endif

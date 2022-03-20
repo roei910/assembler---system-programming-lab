@@ -3,6 +3,7 @@
 #include <string.h>
 #include "constants.h"
 #include "decodeLine.h"
+#include "symbol.h"
 
 #if !defined(FIRST_RUN_HEADER)
 #define FIRST_RUN_HEADER
@@ -20,7 +21,7 @@
  * @param tableSize size of symbol table
  * @return int 
  */
-int startFirstRun(FILE *, symbol *, BinaryLine *, int *, int *, int *);
+int startFirstRun(FILE *, Symbol *, BinaryLine *, int *, int *, int *);
 
 /**
  * @brief returns true if an inputline contains .string
@@ -29,18 +30,6 @@ int startFirstRun(FILE *, symbol *, BinaryLine *, int *, int *, int *);
  * @return int 
  */
 int isStringLine(char *);
-
-/**
- * @brief Creates a Symbol in the symbol table
- * 
- * @param table symbol table
- * @param index current last index
- * @param symbolName name of symbol to create
- * @param attr attribute for symbol
- * @param base base address for symbol
- * @param offset offset from base address for symbol
- */
-void createSymbol(symbol *, int, char *, char *, int, int);
 
 /**
  * @brief creates .string and .data binary lines, returns the amount of lines created
@@ -67,7 +56,7 @@ int extractDataFromLine(char *, BinaryLine *, int line);
  * @param destAddressing type of addressing for destination
  * @return int 
  */
-int buildCodeLines(int, int, BinaryLine *, symbol *, int, char *, char *, int, char *, int);
+int buildCodeLines(int, int, BinaryLine *, Symbol *, int, char *, char *, int, char *, int);
 
 /**
  * @brief extracts a symbol from inputline and copies the symbol to symbol parameter
