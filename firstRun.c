@@ -151,6 +151,10 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
         }
         strcpy(tempLine, ptr + 1);
         ptr = tempLine;
+        if(sscanf(ptr, " %c", &tempC) == -1){
+            fprintf(stdout, "[ERROR]: line:%d, string is incorrect / missing\n", line);
+            return 0;
+        }
         while((*ptr) != QUOTATION_SYMBOL_CHAR){
             tempC = *(ptr++);
             if(tempC == '"')
