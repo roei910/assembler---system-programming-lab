@@ -1,13 +1,44 @@
 /**
- * @file compiler.c
+ * @file assembler.c
  * @author roei daniel
- * @brief the file will handle a single .as file and run the compiler program
+ * @brief the file will handle a single .as file and run the assembler program
  * will create files according to the lines read
  */
-#include "compiler.h"
+#include "assembler.h"
 
 /**
- * @brief run compiler for a file name, returns true for successfull run
+ * @brief main function, checks if the function received arguments
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
+int main(int argc, char **argv){
+    if(argc == 1)
+        printf("[Error]: no input files\n");
+    else
+        startAssembler(argc, argv);
+    return 0;
+}
+
+/**
+ * @brief start to run assembler program for each file received
+ * 
+ * @param argc 
+ * @param argv 
+ */
+void startAssembler(int argc, char **argv){
+    int i;
+    for(i = 1; i < argc; i++){
+        if(!runProgram(*(argv+i)))/*run each file name through assembler*/
+            fprintf(stderr, "[Assembler Error]: found error/s while compiling file \"%s\"\n", *(argv+i));
+        else
+            fprintf(stdout, "[Assembler]: file \"%s\" was compiled successfully\n", *(argv+i));
+    }
+}
+
+/**
+ * @brief run assembler for a file name, returns true for successfull run
  * 
  * @param fileName the file to be compiled
  */
@@ -19,7 +50,7 @@ int runProgram(char *fileName){
     char *amFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     int ICF, DCF, symbolTableSize, error = 1;
 
-    if(!preCompiler(fileName))
+    if(!preAssembler(fileName))
         return 0;
     strcpy(amFileName, fileName);
     strcat(amFileName, ".am");
@@ -57,11 +88,11 @@ int runProgram(char *fileName){
 }
 
 /**
- * @brief run the file through precompiler program, return true if the precompiler was successfull
+ * @brief run the file through preAssembler program, return true if the preAssembler was successfull
  * 
- * @param fileName the file name to be run precompiler
+ * @param fileName the file name to be run preAssembler
  */
-int preCompiler(char *fileName){
+int preAssembler(char *fileName){
     int error = 1;
     FILE *fp;
     char *newFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));

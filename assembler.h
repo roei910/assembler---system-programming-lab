@@ -1,24 +1,32 @@
 #include <stdio.h>
-#include "preCompiler.h"
+#include "preAssembler.h"
 #include "firstRun.h"
 #include "secondRun.h"
 
-#if !defined(COMPILER_HEADER)
-#define COMPILER_HEADER
+#if !defined(ASSEMBLER_HEADER)
+#define ASSEMBLER_HEADER
 
 /**
- * @brief run compiler for a file name, returns true for successfull run
+ * @brief start to run assembler program for each file received
+ * 
+ * @param argc 
+ * @param argv 
+ */
+void startAssembler(int, char **);
+
+/**
+ * @brief run assembler for a file name, returns true for successfull run
  * 
  * @param fileName the file to be compiled
  */
 int runProgram(char *);
 
 /**
- * @brief run the file through precompiler program, return true if the precompiler was successfull
+ * @brief run the file through preAssembler program, return true if the preAssembler was successfull
  * 
- * @param fileName the file name to be run precompiler
+ * @param fileName the file name to be run preAssembler
  */
-int preCompiler(char *);
+int preAssembler(char *);
 
 /**
  * @brief build the output files after first and second run was successfull

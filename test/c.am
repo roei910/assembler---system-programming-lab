@@ -1,0 +1,14 @@
+; file c.am
+
+Hello:         inc r6
+Hello:         inc r6
+r1:         inc r6
+inc:         inc r6
+
+                inc     r6
+                mov     r3, W
+
+                add r1, r3
+                
+                inc     r6
+                mov     r3, W

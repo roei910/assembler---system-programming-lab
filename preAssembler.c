@@ -1,10 +1,10 @@
 /**
- * @file preCompiler.c
+ * @file preAssembler.c
  * @author roei daniel
- * @brief preCompiler replace all macros in file, create a new file with .am extension 
+ * @brief preAssembler replace all macros in file, create a new file with .am extension 
  * @copyright Copyright (c) 2022
  */
-#include "preCompiler.h"
+#include "preAssembler.h"
 
 /**
  * @brief starts to replace all macro on file fp

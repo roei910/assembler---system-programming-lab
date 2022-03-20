@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include "constants.h"
 
-#if !defined(PRE_COMPILER_HEADER)
-#define PRE_COMPILER_HEADER
+#if !defined(PRE_ASSEMBLER_HEADER)
+#define PRE_ASSEMBLER_HEADER
 
 #define MAX_MACRO_NAME 20
 #define MAX_MACRO_LENGTH 6 /*max lines for a macro decleration*/
