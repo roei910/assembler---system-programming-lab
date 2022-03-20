@@ -7,9 +7,33 @@
 
 #include "binaryLine.h"
 
-void printWord(FILE *fp, BinaryLine line){
-    fprintf(fp, "A%x-B%x-C%x-D%x-E%x\n", line.machineCode.wordPrint.A, line.machineCode.wordPrint.B,
-        line.machineCode.wordPrint.C, line.machineCode.wordPrint.D, line.machineCode.wordPrint.E);
+struct binaryLine{
+    union MachineCode{
+        unsigned int code:SIZE_OF_WORD;
+        struct 
+        {
+            unsigned int addressingDest:2;
+            unsigned int dest:4;
+            unsigned int addressingSrc:2;
+            unsigned int src:4;
+            unsigned int funct:4;
+            unsigned int A:4;
+        }word;
+
+        struct 
+        {
+            unsigned int E:4;
+            unsigned int D:4;
+            unsigned int C:4;
+            unsigned int B:4;
+            unsigned int A:4;
+        }wordPrint;
+    } machineCode;
+};
+
+void printWord(FILE *fp, BinaryLine *line){
+    fprintf(fp, "A%x-B%x-C%x-D%x-E%x\n", line->machineCode.wordPrint.A, line->machineCode.wordPrint.B,
+        line->machineCode.wordPrint.C, line->machineCode.wordPrint.D, line->machineCode.wordPrint.E);
 }
 
 void createBinaryLine(BinaryLine *line, int numOfArguments, ...){
@@ -45,4 +69,12 @@ void createBinaryLine(BinaryLine *line, int numOfArguments, ...){
             break;
     }
     va_end(valist);
+}
+
+BinaryLine *createBinaryLineArray(int size){
+    return (BinaryLine *)calloc(size, sizeof(BinaryLine));
+}
+
+BinaryLine *getBinaryAtIndex(BinaryLine *binaryArray, int index){
+    return binaryArray + index;
 }

@@ -1,27 +1,85 @@
+#if !defined(SYMBOL_HEADER)
+#define SYMBOL_HEADER
+
 #include "constants.h"
 #include <string.h>
 #include <stdlib.h>
 
-#if !defined(SYMBOL_HEADER)
-#define SYMBOL_HEADER
-
+/**
+ * @brief definition of symbol object
+ * symbol object includes:
+ * 1. symbolName - array of chars
+ * 2. baseAddress - int
+ * 3. offset - int
+ * 4. attributeCount - int
+ * 5. attributes - double array of chars;
+ */
 typedef struct symbol Symbol;
 
-Symbol *createSymbolArray(int size);
+/**
+ * @brief Create an array of symbols, by a given size
+ * 
+ * @param size size of array
+ * @return Symbol* 
+ */
+Symbol *createSymbolArray(int);
 
-Symbol *getSymbolAtIndex(Symbol *symbolArray, int index);
+/**
+ * @brief get symbol from array at given index
+ * 
+ * @param symbolArray pointer to symbol array
+ * @param index int index
+ * @return Symbol* 
+ */
+Symbol *getSymbolAtIndex(Symbol *, int );
 
-char *getAttributesLine(Symbol *symbol, int index);
+/**
+ * @brief Get Attributes Line by a specific index from the attributes 2d array
+ * 
+ * @param symbol symbol object
+ * @param index int index
+ * @return char* 
+ */
+char *getAttributesLine(Symbol *, int);
 
-char *getSymbolName(Symbol *symbol);
+/**
+ * @brief Get the Symbol Name
+ * 
+ * @param symbol pointer to symbol object
+ * @return char* 
+ */
+char *getSymbolName(Symbol *);
 
-int getBaseAddress(Symbol *symbol);
+/**
+ * @brief Get the Base Address of a symbol object
+ * 
+ * @param symbol pointer to symbol object
+ * @return int 
+ */
+int getBaseAddress(Symbol *);
 
+/**
+ * @brief Get the Offset of a symbol object
+ * 
+ * @param symbol pointer to symbol object
+ * @return int 
+ */
 int getOffset(Symbol *);
 
-int getAttributesCount(Symbol *symbol);
+/**
+ * @brief Get the Attributes Count of a symbol object
+ * 
+ * @param symbol pointer to symbol object
+ * @return int 
+ */
+int getAttributesCount(Symbol *);
 
-void increaseAttributeCount(Symbol *symbol);
+/**
+ * @brief increase the attribues count by 1
+ * 
+ * @param symbol pointer to symbol object
+ */
+void increaseAttributeCount(Symbol *);
 
 /**
  * @brief Creates a Symbol in the symbol table

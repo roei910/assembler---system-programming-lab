@@ -32,7 +32,7 @@ int startFirstRun(FILE *fp, Symbol *symbolTable, BinaryLine *lines, int *ICF, in
                 }
             }
             /* add data as bin lines, add DC count according to lines created*/
-            addedLines = extractDataFromLine(inputLine, lines+IC-100, fileLines);
+            addedLines = extractDataFromLine(inputLine, getBinaryAtIndex(lines, IC-100), fileLines);
             if(addedLines == 0)
                 error = 0;
             DC += addedLines;
@@ -85,7 +85,7 @@ int startFirstRun(FILE *fp, Symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(!addedLines){
                 error = 0;
             }
-            else if(!buildCodeLines(fileLines, numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
+            else if(!buildCodeLines(fileLines, numberOfOpperands, getBinaryAtIndex(lines, IC-100), symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
                 error = 0;
             }
             IC += addedLines;            
@@ -123,14 +123,14 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
             tempC = *(ptr++);
             if(tempC == '"')
                 tempC = 0;
-            createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempC);
+            createBinaryLine(getBinaryAtIndex(lines, countLines), 2, MACHINE_CODE_A, tempC);
             countLines++;
             if(*ptr == '\n'){
                 fprintf(stdout, "[ERROR]: line:%d, string is incorrect\n", line);
                 return 0;
             }
         }
-        createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, 0);
+        createBinaryLine(getBinaryAtIndex(lines, countLines), 2, MACHINE_CODE_A, 0);
             countLines++;
     }
     else{/*.data*/
@@ -156,7 +156,7 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
                 return 0;
             }
             ptr = strtok(NULL, COMMA_SYMBOL);
-            createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempNumber);
+            createBinaryLine(getBinaryAtIndex(lines, countLines), 2, MACHINE_CODE_A, tempNumber);
             countLines++;
         }
     }

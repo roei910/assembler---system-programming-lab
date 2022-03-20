@@ -255,7 +255,7 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, char *command, in
     switch (arguments)
     {
         case 0:
-            createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
+            createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
             return linesWritten;
         case 2:/*arguments: DEST REG, DEST ADDRESSING*/
             destPtr = va_arg(valist, char *);
@@ -270,13 +270,13 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, char *command, in
                 fprintf(stdout, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
                 return 0;
             }
-            createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
-            createBinaryLine(lines+(linesWritten++), 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
+            createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
+            createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 4, MACHINE_CODE_A, getFunct(command), dest, destAddressing);
             if(destAddressing == 0)
-                createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, dest);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, MACHINE_CODE_A, dest);
             if((destAddressing == 1) || (destAddressing == 2)){
-                createBinaryLine(lines+(linesWritten++), 2, 3, 0);
-                createBinaryLine(lines+(linesWritten++), 2, 3, 0);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, 3, 0);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, 3, 0);
             }
             return linesWritten;
         case 4:
@@ -304,19 +304,19 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, char *command, in
                 fprintf(stdout, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
                 return 0;
             }
-            createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
-            createBinaryLine(lines+(linesWritten++), 6, MACHINE_CODE_A, getFunct(command), (srcAddressing == 0)? 0 : src, srcAddressing, (destAddressing == 0)? 0 : dest, destAddressing);          
+            createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
+            createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 6, MACHINE_CODE_A, getFunct(command), (srcAddressing == 0)? 0 : src, srcAddressing, (destAddressing == 0)? 0 : dest, destAddressing);          
             if(srcAddressing == 0)
-                createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, src);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, MACHINE_CODE_A, src);
             if((srcAddressing == 1) || (srcAddressing == 2)){
-                createBinaryLine(lines+(linesWritten++), 2, 3, 0);
-                createBinaryLine(lines+(linesWritten++), 2, 3, 0);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, 3, 0);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, 3, 0);
             }
             if(destAddressing == 0)
-                createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, dest);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, MACHINE_CODE_A, dest);
             if((destAddressing == 1) || (destAddressing == 2)){
-                createBinaryLine(lines+(linesWritten++), 2, 3, 0);
-                createBinaryLine(lines+(linesWritten++), 2, 3, 0);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, 3, 0);
+                createBinaryLine(getBinaryAtIndex(lines, (linesWritten++)), 2, 3, 0);
             }
             return linesWritten;
     }

@@ -33,7 +33,7 @@ int startSecondRun(FILE *fp, char *extFileName, Symbol *symbolTable, BinaryLine 
                     if(destAddressing == 0)
                         linesCounter++;
                     if(((destAddressing) == 1) || ((destAddressing) == 2)){/**/
-                        if(!buildSymbolLines(fileLines, &extFp, extFileName, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter))
+                        if(!buildSymbolLines(fileLines, &extFp, extFileName, getBinaryAtIndex(lines, linesCounter), symbolTable, tableSize, dest, 100+linesCounter))
                             error = 0;
                         linesCounter+=2;
                     }
@@ -43,14 +43,14 @@ int startSecondRun(FILE *fp, char *extFileName, Symbol *symbolTable, BinaryLine 
                     if(srcAddressing == 0)
                         linesCounter++;
                     if((srcAddressing == 1) || (srcAddressing == 2)){
-                        if(!buildSymbolLines(fileLines, &extFp, extFileName, lines+linesCounter, symbolTable, tableSize, src, 100+linesCounter))
+                        if(!buildSymbolLines(fileLines, &extFp, extFileName, getBinaryAtIndex(lines, linesCounter), symbolTable, tableSize, src, 100+linesCounter))
                             error = 0;  
                         linesCounter+=2;
                     }
                     if(destAddressing == 0)
                         linesCounter++;
                     if(((destAddressing) == 1) || ((destAddressing) == 2)){/**/
-                        if(!buildSymbolLines(fileLines, &extFp, extFileName, lines+linesCounter, symbolTable, tableSize, dest, 100+linesCounter))
+                        if(!buildSymbolLines(fileLines, &extFp, extFileName, getBinaryAtIndex(lines, linesCounter), symbolTable, tableSize, dest, 100+linesCounter))
                             error = 0;
                         linesCounter+=2;
                     }
@@ -99,7 +99,7 @@ void getSymbolFromOpperand(char *opperand, char *tempSymbol){
 }
 
 int buildSymbolLines(int linesCounter, FILE **fp, char *extFileName, BinaryLine *lines, Symbol *symbolTable, int tableSize, char *opperand, int IC){
-    int symbolIndex, error = 1;
+    int symbolIndex;
     char tempSymbol[MAX_SYMBOL_LENGTH];
     Symbol *symbolPtr;
     getSymbolFromOpperand(opperand, tempSymbol);
@@ -107,24 +107,24 @@ int buildSymbolLines(int linesCounter, FILE **fp, char *extFileName, BinaryLine 
     symbolPtr = getSymbolAtIndex(symbolTable, symbolIndex);
     if(symbolIndex == -1){
         fprintf(stdout, "[ERROR]: line:%d, couldn't find symbol \"%s\" in the symbol table\n", linesCounter, tempSymbol);
-        error = 0;
+        return 0;
     }
     if(!strcmp(getAttributesLine(symbolPtr, 0), EXTERNAL_ATTRIBUTE)){
         createBinaryLine(lines, 2, MACHINE_CODE_E, getBaseAddress(symbolPtr));
-        createBinaryLine(lines+1, 2, MACHINE_CODE_E, getOffset(symbolPtr));
+        createBinaryLine(getBinaryAtIndex(lines, 1), 2, MACHINE_CODE_E, getOffset(symbolPtr));
         if(*fp == NULL){
             if(!(*fp = fopen(extFileName, "w"))){
                 fprintf(stdout, "[ERROR]: creating .ext file %s\n", extFileName);
-                error = 0;
+                return 0;
             }  
         }
         printSymbolExternal(*fp, symbolPtr, IC);
     }
     else{
         createBinaryLine(lines, 2, MACHINE_CODE_R, getBaseAddress(symbolPtr));
-        createBinaryLine(lines+1, 2, MACHINE_CODE_R, getOffset(symbolPtr));
+        createBinaryLine(getBinaryAtIndex(lines, 1), 2, MACHINE_CODE_R, getOffset(symbolPtr));
     }
-    return error;             
+    return 1;             
 }
 
 void printSymbolExternal(FILE *fp, Symbol *extSymbol, int baseAddress){

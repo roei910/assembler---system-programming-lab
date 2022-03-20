@@ -29,7 +29,7 @@ void startAssembler(int argc, char **argv){
 int runProgram(char *fileName){
     FILE *fp;
     Symbol *symbolTable = createSymbolArray(MAX_SYMBOLS);
-    BinaryLine *lines = (BinaryLine *)calloc(MAX_MACHINE_CODE_LINES, sizeof(BinaryLine));
+    BinaryLine *lines = createBinaryLineArray(MAX_MACHINE_CODE_LINES);
     char *extFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     char *amFileName = (char *) calloc(strlen(fileName)+3, sizeof(char));
     int ICF, DCF, symbolTableSize, error = 1;
@@ -99,7 +99,7 @@ int buildOutPutFiles(char *fileName, BinaryLine *lines, Symbol *symbolTable, int
         fprintf(fp, "\t%d\t%d\n", ICF-DCF-100, DCF);
         for(i = 0 ; i < ICF-100 ; i++){
             fprintf(fp, "%04d\t", i+100);
-            printWord(fp, *(lines+i));
+            printWord(fp, getBinaryAtIndex(lines, i));
         }
         fclose(fp);
     }

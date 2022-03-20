@@ -1,5 +1,5 @@
-assembler: assembler.o secondRun.o firstRun.o decodeLine.o binaryLine.o preAssembler.o symbol.o
-	gcc -Wall -ansi -pedantic -g assembler.o secondRun.o firstRun.o decodeLine.o symbol.o binaryLine.o preAssembler.o -o assembler -lm
+assembler: assembler.o secondRun.o firstRun.o decodeLine.o binaryLine.o preAssembler.o symbol.o macroNode.o
+	gcc -Wall -ansi -pedantic -g assembler.o secondRun.o firstRun.o decodeLine.o macroNode.o symbol.o binaryLine.o preAssembler.o -o assembler -lm
 assembler.o: assembler.c assembler.h
 	gcc -c -ansi -Wall -pedantic assembler.c -o assembler.o
 secondRun.o: secondRun.c secondRun.h
@@ -14,6 +14,8 @@ preAssembler.o: preAssembler.c preAssembler.h
 	gcc -c -ansi -Wall -pedantic preAssembler.c -o preAssembler.o
 symbol.o: symbol.c symbol.h
 	gcc -c -ansi -Wall -pedantic symbol.c -o symbol.o
+macroNode.o: macroNode.c macroNode.h
+	gcc -c -ansi -Wall -pedantic macroNode.c -o macroNode.o
 clean:
 	rm *.o
 remove:

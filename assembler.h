@@ -1,11 +1,11 @@
+#if !defined(ASSEMBLER_HEADER)
+#define ASSEMBLER_HEADER
+
 #include <stdio.h>
 #include "preAssembler.h"
 #include "firstRun.h"
 #include "secondRun.h"
 #include "symbol.h"
-
-#if !defined(ASSEMBLER_HEADER)
-#define ASSEMBLER_HEADER
 
 #define NEW_LINE_FOR_PRINT "********************************************\n"
 /**
