@@ -57,7 +57,7 @@ int runProgram(char *fileName){
     
     if((fp = fopen(amFileName, "r"))){ /*open .am file*/
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
-            fprintf(stderr, "[First Run Error]: please check error/s\n");
+            fprintf(stderr, "[First Run Error]: please check error/s in .am file\n");
             error = 0;
         }
         else{

@@ -89,11 +89,7 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest,
         if(ptr != NULL){
             ptr = strtok(NULL, COMMA_SYMBOL);
             if(ptr == NULL){
-                if(sscanf(dest, " %s", src) == -1){
-                    fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
-                    return -1;
-                }
-
+                strcpy(dest, src);
                 countOpp = 1;
             }
             else{

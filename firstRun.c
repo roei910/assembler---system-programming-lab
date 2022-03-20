@@ -12,7 +12,7 @@
  * @return int 
  */
 int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, int *DCF, int *tableSize){
-    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, fileLines = -1;
+    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, fileLines = 0;
     int srcAddressing, destAddressing, numberOfOpperands;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
