@@ -1,20 +1,17 @@
-; file b.as
+; file input1.as
 .entry LIST
 .extern W
+
 MAIN:           add     r3,LIST
 LOOP:           prn     #48
-                macro   m1
-                    inc r6
-                    mov r3, W
+                macro m1
+                inc     r6
+                mov     r3, W
                 endm
                 lea     STR, r6
                 m1
                 sub     r1, r4
                 bne     END
-                macro   m2
-                    inc r3
-                    mov r2, W
-                endm
                 cmp     val1, #-6
                 bne     END[r15]
                 dec     K

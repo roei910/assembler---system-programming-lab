@@ -1,4 +1,31 @@
-; file errors1.am
+;errors in first run
+;error - Hello exists twice
+Hello:         inc r6
+Hello:         inc r6
+;error - symbol r1 is invalid (saved for register)
+r1:         inc r6
+;error - symbol inc is invalid (saved for command)
+inc:         inc r6
+                macro   m1
+                inc     r6
+                mov     r3, W
+                endm
+
+                m1
+
+                add r1, r3
+                
+                m1
+
+;errors in command opperands
+
+cmp #1, #1, #1
+
+
+
+
+
+;errors check - first run
 
 ;label errors
 myLabel: .string "This should be fine"

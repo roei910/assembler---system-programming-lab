@@ -1,4 +1,9 @@
-; file errors2.am
+;second run error
+;error - LIST symbol not found
+MAIN:           add     r3,LIST
+
+
+; second run errors
 EXIST: .string "this label will used for comparison"
 
 mov notHere, r1
