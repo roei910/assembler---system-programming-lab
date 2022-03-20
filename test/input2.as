@@ -1,4 +1,4 @@
-;errors in first run
+;errors in first run file
 ;error - Hello exists twice
 Hello:         inc r6
 Hello:         inc r6

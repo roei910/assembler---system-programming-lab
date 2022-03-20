@@ -21,7 +21,6 @@ int replaceAllMacro(FILE *fp, char *fileName){
     FILE *secondfp;
     secondfp = fopen(fileName, "w");
     writeNewFileName(secondfp, fileName);
-    fgets(lineBuffer, MAX_LINE, fp);
     while(fgets(lineBuffer, MAX_LINE, fp) != NULL){/*read each line*/
         strcpy(macroName, "");
         if((cp = isMacro(lineBuffer)) != NULL){
@@ -136,6 +135,6 @@ void writeNewFileName(FILE *fp, char *fileName){
     tempFileName = strstr(fileName, "/");
     if(tempFileName != NULL)
         fprintf(fp, "; file %s\n", tempFileName+1);
-    else    
+    else
         fprintf(fp, "; file %s\n", fileName);
 }

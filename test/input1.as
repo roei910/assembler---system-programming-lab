@@ -1,4 +1,4 @@
-; file input1.as
+;valid input file
 .entry LIST
 .extern W
 
