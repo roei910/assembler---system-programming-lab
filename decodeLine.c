@@ -20,7 +20,7 @@
  */
 int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
     int valid, linesAdded = 0;
-    *numberOfOpperands = decodeInstructionLine(inputLine, command, src, dest);
+    *numberOfOpperands = decodeInstructionLine(inputLine, command, src, dest, line);
     switch (*numberOfOpperands)
     {
         case 0:
@@ -60,12 +60,7 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
             }
             break;
         case -1:
-            fprintf(stderr, "[ERROR]: line:%d, number of opperands is incorrect: \"%s\", number of opperands should be %d\n", line, command, getNumberOfOpperands(command));
             break;
-        case -2:
-            fprintf(stderr, "[ERROR]: line:%d, illegal command name: \"%s\"\n", line, command);
-            break;
-
     }
     return 0;
 }
@@ -79,7 +74,7 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
  * @param dest 
  * @return int number of opperands
  */
-int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest){
+int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest, int line){
     char opperands[2*MAX_OPPERAND_LENGTH], *ptr, inputLineCpy[MAX_LINE];
     int countOpp, numOfopp;
     strcpy(inputLineCpy, inputLine);
@@ -87,15 +82,25 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
         return 0;/*couldnt find a command*/
     if(countOpp == 2){/*there is at least 1 opperand*/
         ptr = strtok(strstr(inputLineCpy, command) + strlen(command), COMMA_SYMBOL);
-        sscanf(ptr, "%s", src);
+        if(sscanf(ptr, "%s", src) == -1){
+            fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
+            return -1;
+        }
         if(ptr != NULL){
             ptr = strtok(NULL, COMMA_SYMBOL);
             if(ptr == NULL){
-                strcpy(dest, src);
+                if(sscanf(dest, " %s", src) == -1){
+                    fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
+                    return -1;
+                }
+
                 countOpp = 1;
             }
             else{
-                sscanf(ptr, "%s", dest);
+                if(sscanf(ptr, " %s", dest) == -1){
+                    fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
+                    return -1;
+                }
                 ptr = strtok(NULL, COMMA_SYMBOL);
                 if(ptr != NULL)
                     return -1;
@@ -105,11 +110,17 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest)
     else
         countOpp = 0;
     numOfopp = getNumberOfOpperands(command);/*get number of opperands by command name*/
-    if(numOfopp == -1)
-        return -2;/*illegal command name*/
+    if(numOfopp == -1){
+        if(strstr(command, COMMA_SYMBOL))
+            fprintf(stderr, "[ERROR]: line:%d, illegal comma in command name: \"%s\"\n", line, command);
+        else
+            fprintf(stderr, "[ERROR]: line:%d, illegal command name: \"%s\"\n", line, command);
+        return -1;
+    }
     if(numOfopp == countOpp)
         return countOpp;
-    return -1;/*number of opps is incorrect*/
+    fprintf(stderr, "[ERROR]: line:%d, number of opperands is incorrect: \"%s\", number of opperands should be %d\n", line, command, numOfopp);
+    return -1;
 }
 
 /**

@@ -46,19 +46,32 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
         else if(isExternDecleration(inputLine)){
             if(symbolDecleration)
                 skipSymbol(inputLine);
-            sscanf(inputLine+strlen(EXTERN_DECLERATION), " %s", tempSymbol);
-            if(!checkValidSymbol(tempSymbol)){/*check symbol is valid*/
-                fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
+            if(sscanf(inputLine+strlen(EXTERN_DECLERATION), " %s", tempSymbol) == -1){
+                fprintf(stderr, "[ERROR]: line:%d, missing symbol after .extern\n", fileLines);
                 error = 0;
             }
-            if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
-                createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
             else{
-                fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
+                if(!checkValidSymbol(tempSymbol)){/*check symbol is valid*/
+                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
+                    error = 0;
+                }
+                if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
+                    createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
+                else{
+                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
+                    error = 0;
+                }
+            }
+        }
+        else if(isEntryDecleration(inputLine)){
+            if(symbolDecleration)
+                skipSymbol(inputLine);
+            if(sscanf(inputLine+strlen(ENTRY_DECLERATION), " %s", tempSymbol) == -1){
+                fprintf(stderr, "[ERROR]: line:%d, missing symbol after .entry\n", fileLines);
                 error = 0;
             }
         }
-        else if((!isEmptyLine(inputLine)) && (!isCommentLine(inputLine)) && (!isEntryDecleration(inputLine))){/*11 - normal code line*/
+        else if((!isEmptyLine(inputLine)) && (!isCommentLine(inputLine))){/*11 - normal code line*/
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){

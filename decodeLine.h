@@ -66,9 +66,10 @@ int lineDecode(int, char *, char *, char *, char *, int *, int *, int *);
  * @param command 
  * @param src 
  * @param dest 
+ * @param line number of line for error output
  * @return int number of opperands
  */
-int decodeInstructionLine(char *, char *, char *, char *);
+int decodeInstructionLine(char *, char *, char *, char *, int);
 
 /**
  * @brief check the opperand type of a given opperand
