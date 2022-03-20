@@ -19,7 +19,7 @@ int startSecondRun(FILE *fp, char *extFileName, symbol *symbolTable, BinaryLine 
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     int srcAddressing, destAddressing, numberOfOpperands;
-    int error = 1, linesCounter = 0, commandLines = 0, fileLines = 0;
+    int error = 1, linesCounter = 0, commandLines = 0, fileLines = -1;
     FILE *extFp = NULL;
     rewind(fp);
     while(fgets(inputLine, MAX_LINE, fp) != NULL){

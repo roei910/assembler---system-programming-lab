@@ -12,12 +12,12 @@
  * @return int 
  */
 int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, int *DCF, int *tableSize){
-    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, line = 0;
+    int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, fileLines = -1;
     int srcAddressing, destAddressing, numberOfOpperands;
     char command[MAX_COMMAND_NAME_LENGTH], src[MAX_OPPERAND_LENGTH], dest[MAX_OPPERAND_LENGTH];
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];
     while(fgets(inputLine, MAX_LINE, fp) != NULL){
-        line++;
+        fileLines++;
         symbolDecleration = 0;
         if(isSymbolDecleration(inputLine)){
             symbolDecleration = 1;
@@ -26,18 +26,18 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", line, tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_ATTRIBUTE, 16 * (IC / 16), IC - (16 * (IC / 16)));
                 else{
-                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", line, tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
                     error = 0;
                 }
             }
             /*7 - add data as bin lines, add DC count according to lines created*/
-            addedLines = extractDataFromLine(inputLine, lines+IC-100, line);
+            addedLines = extractDataFromLine(inputLine, lines+IC-100, fileLines);
             if(addedLines == 0)
                 error = 0;
             DC += addedLines;
@@ -48,13 +48,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
                 skipSymbol(inputLine);
             sscanf(inputLine+strlen(EXTERN_DECLERATION), " %s", tempSymbol);
             if(!checkValidSymbol(tempSymbol)){/*check symbol is valid*/
-                fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", line, tempSymbol);
+                fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
                 error = 0;
             }
             if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                 createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
             else{
-                fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", line, tempSymbol);
+                fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
                 error = 0;
             }
         }
@@ -62,22 +62,22 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", line, tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, CODE_ATTRIBUTE, 16 * (IC / 16), IC - 16 * (IC / 16));
                 else{
-                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", line, tempSymbol);
+                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 skipSymbol(inputLine);
             }
-            addedLines = lineDecode(line, inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
+            addedLines = lineDecode(fileLines, inputLine, command, src, dest, &srcAddressing, &destAddressing, &numberOfOpperands);
             if(!addedLines){
                 error = 0;
             }
-            else if(!buildCodeLines(line, numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
+            else if(!buildCodeLines(fileLines, numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
                 error = 0;
             }
             IC += addedLines;
