@@ -30,7 +30,7 @@ int startSecondRun(FILE *fp, char *extFileName, symbol *symbolTable, BinaryLine 
             if(extractSymbolFromEntryLine(inputLine, tempSymbol))
                 addAttribute(linesCounter, symbolTable, tableSize, tempSymbol, ENTRY_ATTRIBUTE);
             else{
-                fprintf(stderr, "[ERROR]: line:%d, couldn't extract symbol from entry line\n", fileLines);
+                fprintf(stdout, "[ERROR]: line:%d, couldn't extract symbol from entry line\n", fileLines);
                 error = 0;
             }        
         }
@@ -90,12 +90,12 @@ int addAttribute(int linesCounter, symbol *table, int tableSize, char *symbolNam
     int index = findSymbolInTable(table, tableSize, symbolName);
     int attrIndex;
     if(index == -1){
-        fprintf(stderr, "[ERROR]: line:%d, in entry line, symbol not found in symbol table\n", linesCounter);
+        fprintf(stdout, "[ERROR]: line:%d, in entry line, symbol not found in symbol table\n", linesCounter);
         return 0;
     }
     attrIndex = (table+index)->attributeCount;
     if(attrIndex >= MAX_ATTRIBUTES){
-        fprintf(stderr, "[ERROR]: line:%d, max attributes for symbol \"%s\"\n", linesCounter, symbolName);
+        fprintf(stdout, "[ERROR]: line:%d, max attributes for symbol \"%s\"\n", linesCounter, symbolName);
         return 0;
     }
     strcpy(((table+index)->attributes)[attrIndex], attr);
@@ -148,7 +148,7 @@ int buildSymbolLines(int linesCounter, FILE **fp, char *extFileName, BinaryLine 
     getSymbolFromOpperand(opperand, tempSymbol);
     symbolIndex = findSymbolInTable(symbolTable, tableSize, tempSymbol);
     if(symbolIndex == -1){
-        fprintf(stderr, "[ERROR]: line:%d, couldn't find symbol \"%s\" in the symbol table\n", linesCounter, tempSymbol);
+        fprintf(stdout, "[ERROR]: line:%d, couldn't find symbol \"%s\" in the symbol table\n", linesCounter, tempSymbol);
         error = 0;
     }
     if(!strcmp(((symbolTable+symbolIndex)->attributes[0]), EXTERNAL_ATTRIBUTE)){
@@ -156,7 +156,7 @@ int buildSymbolLines(int linesCounter, FILE **fp, char *extFileName, BinaryLine 
         createBinaryLine(lines+1, 2, MACHINE_CODE_E, (symbolTable+symbolIndex)->offset);
         if(*fp == NULL){
             if(!(*fp = fopen(extFileName, "w"))){
-                fprintf(stderr, "[ERROR]: creating .ext file %s\n", extFileName);
+                fprintf(stdout, "[ERROR]: creating .ext file %s\n", extFileName);
                 error = 0;
             }  
         }

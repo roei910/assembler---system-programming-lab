@@ -26,13 +26,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
+                    fprintf(stdout, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, DATA_ATTRIBUTE, 16 * (IC / 16), IC - (16 * (IC / 16)));
                 else{
-                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
+                    fprintf(stdout, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
                     error = 0;
                 }
             }
@@ -47,18 +47,18 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(symbolDecleration)
                 skipSymbol(inputLine);
             if(sscanf(inputLine+strlen(EXTERN_DECLERATION), " %s", tempSymbol) == -1){
-                fprintf(stderr, "[ERROR]: line:%d, missing symbol after .extern\n", fileLines);
+                fprintf(stdout, "[ERROR]: line:%d, missing symbol after .extern\n", fileLines);
                 error = 0;
             }
             else{
                 if(!checkValidSymbol(tempSymbol)){/*check symbol is valid*/
-                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
+                    fprintf(stdout, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, EXTERNAL_ATTRIBUTE, 0, 0);
                 else{
-                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
+                    fprintf(stdout, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
                     error = 0;
                 }
             }
@@ -67,7 +67,7 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(symbolDecleration)
                 skipSymbol(inputLine);
             if(sscanf(inputLine+strlen(ENTRY_DECLERATION), " %s", tempSymbol) == -1){
-                fprintf(stderr, "[ERROR]: line:%d, missing symbol after .entry\n", fileLines);
+                fprintf(stdout, "[ERROR]: line:%d, missing symbol after .entry\n", fileLines);
                 error = 0;
             }
         }
@@ -75,13 +75,13 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
-                    fprintf(stderr, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
+                    fprintf(stdout, "[ERROR]: line:%d, invalid symbol \"%s\"\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 if(findSymbolInTable(symbolTable, symbolCount, tempSymbol) == -1)
                     createSymbol(symbolTable, symbolCount++, tempSymbol, CODE_ATTRIBUTE, 16 * (IC / 16), IC - 16 * (IC / 16));
                 else{
-                    fprintf(stderr, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
+                    fprintf(stdout, "[ERROR]: line:%d, symbol \"%s\" already exists\n", fileLines, tempSymbol);
                     error = 0;
                 }
                 skipSymbol(inputLine);
@@ -146,7 +146,7 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
     if(isStringLine(inputLine)){/*.string*/
         ptr =  strstr(inputLine, QUOTATION_SYMBOL);
         if(ptr == NULL){
-            fprintf(stderr, "[ERROR]: line:%d, string is incorrect / missing\n", line);
+            fprintf(stdout, "[ERROR]: line:%d, string is incorrect / missing\n", line);
             return 0;
         }
         strcpy(tempLine, ptr + 1);
@@ -158,7 +158,7 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
             createBinaryLine(lines+countLines, 2, MACHINE_CODE_A, tempC);
             countLines++;
             if(*ptr == '\n'){
-                fprintf(stderr, "[ERROR]: line:%d, string is incorrect\n", line);
+                fprintf(stdout, "[ERROR]: line:%d, string is incorrect\n", line);
                 return 0;
             }
         }
@@ -168,23 +168,23 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
     else{/*.data*/
         strcpy(tempLine, strstr(inputLine, DATA_DECLERATION) + 5);
         if(isEmptyLine(tempLine)){
-            fprintf(stderr, "[ERROR]: line:%d, data missing\n", line);
+            fprintf(stdout, "[ERROR]: line:%d, data missing\n", line);
             return 0;
         }
         ptr = strtok(tempLine, COMMA_SYMBOL);
         flag = sscanf(ptr, " %c", &tempC);
         if(flag == -1){
-            fprintf(stderr, "[ERROR]: line:%d, illegal comma in data line\n", line);
+            fprintf(stdout, "[ERROR]: line:%d, illegal comma in data line\n", line);
             return 0;
         }
         while(ptr){
             flag = sscanf(ptr, "%d", &tempNumber);
             if(flag == 0){
-                fprintf(stderr, "[ERROR]: line:%d, incorrect data\n", line);
+                fprintf(stdout, "[ERROR]: line:%d, incorrect data\n", line);
                 return 0;
             }
             else if(flag == -1){
-                fprintf(stderr, "[ERROR]: line:%d, illegal comma in data line\n", line);
+                fprintf(stdout, "[ERROR]: line:%d, illegal comma in data line\n", line);
                 return 0;
             }
             ptr = strtok(NULL, COMMA_SYMBOL);

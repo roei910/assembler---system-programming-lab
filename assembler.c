@@ -31,7 +31,7 @@ void startAssembler(int argc, char **argv){
     int i;
     for(i = 1; i < argc; i++){
         if(!runProgram(*(argv+i)))/*run each file name through assembler*/
-            fprintf(stderr, "[Assembler Error]: found error/s while compiling file \"%s\"\n", *(argv+i));
+            fprintf(stdout, "[Assembler Error]: found error/s while compiling file \"%s\"\n", *(argv+i));
         else
             fprintf(stdout, "[Assembler]: file \"%s\" was compiled successfully\n", *(argv+i));
     }
@@ -57,7 +57,7 @@ int runProgram(char *fileName){
     
     if((fp = fopen(amFileName, "r"))){ /*open .am file*/
         if(!startFirstRun(fp, symbolTable, lines, &ICF, &DCF, &symbolTableSize)){
-            fprintf(stderr, "[First Run Error]: please check error/s in .am file\n");
+            fprintf(stdout, "[First Run Error]: please check error/s in .am file\n");
             error = 0;
         }
         else{
@@ -65,7 +65,7 @@ int runProgram(char *fileName){
             strcpy(extFileName, fileName);
             strcat(extFileName, ".ext");
             if(!startSecondRun(fp, extFileName, symbolTable, lines, symbolTableSize)){
-                fprintf(stderr, "[Second Run Error]: please check error/s from file \"%s\"\n", amFileName);
+                fprintf(stdout, "[Second Run Error]: please check error/s from file \"%s\"\n", amFileName);
                 error = 0;
             }
             else{
@@ -102,7 +102,7 @@ int preAssembler(char *fileName){
         fclose(fp);/*close .as file*/
     }
     else{
-        fprintf(stderr, "[ERROR]: file not found: %s\n", newFileName);
+        fprintf(stdout, "[ERROR]: file not found: %s\n", newFileName);
         error = 0;
     }
     free(newFileName);
@@ -136,7 +136,7 @@ int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int
         fclose(fp);
     }
     else{
-        fprintf(stderr, "[ERROR]: creating .ob file %s\n", newFileName);
+        fprintf(stdout, "[ERROR]: creating .ob file %s\n", newFileName);
         error = 0;
     }
     
@@ -149,7 +149,7 @@ int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int
         fclose(fp);
     }
     else{
-        fprintf(stderr, "[ERROR]: creating .ent file %s\n", newFileName);
+        fprintf(stdout, "[ERROR]: creating .ent file %s\n", newFileName);
         error = 0;
     }
     free(newFileName);

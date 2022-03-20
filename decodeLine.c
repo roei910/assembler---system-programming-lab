@@ -35,7 +35,7 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
                 return linesAdded+=2;                
             }
             else
-                fprintf(stderr, "[ERROR]: line:%d, opperand does not fit the command: \"%s, %s\"\n", line, command, dest);
+                fprintf(stdout, "[ERROR]: line:%d, opperand does not fit the command: \"%s, %s\"\n", line, command, dest);
             break;
         case 2:
             valid = checkValidCommandTwoOpperands(command, src, srcAddressing, dest, destAddressing);
@@ -52,11 +52,11 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
             }
             else{
                 if(valid == 3)
-                    fprintf(stderr, "[ERROR]: line:%d, source and destination opperands do not fit the command: \"%s\"\n", line, command);
+                    fprintf(stdout, "[ERROR]: line:%d, source and destination opperands do not fit the command: \"%s\"\n", line, command);
                 else if(valid == 1)
-                    fprintf(stderr, "[ERROR]: line:%d, source opperand does not fit the command: \"%s, %s\"\n", line, command, src);
+                    fprintf(stdout, "[ERROR]: line:%d, source opperand does not fit the command: \"%s, %s\"\n", line, command, src);
                 else
-                    fprintf(stderr, "[ERROR]: line:%d, destination opperand does not fit the command: \"%s, %s\"\n", line, command, dest);
+                    fprintf(stdout, "[ERROR]: line:%d, destination opperand does not fit the command: \"%s, %s\"\n", line, command, dest);
             }
             break;
         case -1:
@@ -83,11 +83,11 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest,
     if(countOpp == 2){/*there is at least 1 opperand*/
         ptr = strtok(strstr(inputLineCpy, command) + strlen(command), COMMA_SYMBOL);
         if((flag = sscanf(ptr, "%s %c", src, &tempC)) == -1){
-            fprintf(stderr, "[ERROR]: line:%d, illegal comma\n", line);
+            fprintf(stdout, "[ERROR]: line:%d, illegal comma\n", line);
             return -1;
         }
         if(flag == 2){
-            fprintf(stderr, "[ERROR]: line:%d, missing comma / illegal opperand\n", line);
+            fprintf(stdout, "[ERROR]: line:%d, missing comma / illegal opperand\n", line);
             return -1;
         }
         if(ptr != NULL){
@@ -97,12 +97,12 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest,
                 countOpp = 1;
             }
             else{
-                if(sscanf(ptr, " %s %c", dest, &tempC) == -1){
-                    fprintf(stderr, "[ERROR]: line:%d, missing comma\n", line);
+                if((flag = sscanf(ptr, " %s %c", dest, &tempC)) == -1){
+                    fprintf(stdout, "[ERROR]: line:%d, missing comma\n", line);
                     return -1;
                 }
                 if(flag == 2){
-                    fprintf(stderr, "[ERROR]: line:%d, missing comma / illegal opperand\n", line);
+                    fprintf(stdout, "[ERROR]: line:%d, missing comma / illegal opperand\n", line);
                     return -1;
                 }
                 ptr = strtok(NULL, COMMA_SYMBOL);
@@ -117,14 +117,14 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest,
     numOfopp = getNumberOfOpperands(command);/*get number of opperands by command name*/
     if(numOfopp == -1){
         if(strstr(command, COMMA_SYMBOL))
-            fprintf(stderr, "[ERROR]: line:%d, illegal comma in command name: \"%s\"\n", line, command);
+            fprintf(stdout, "[ERROR]: line:%d, illegal comma in command name: \"%s\"\n", line, command);
         else
-            fprintf(stderr, "[ERROR]: line:%d, illegal command name: \"%s\"\n", line, command);
+            fprintf(stdout, "[ERROR]: line:%d, illegal command name: \"%s\"\n", line, command);
         return -1;
     }
     if(numOfopp == countOpp)
         return countOpp;
-    fprintf(stderr, "[ERROR]: line:%d, number of opperands is incorrect: \"%s\", number of opperands should be %d\n", line, command, numOfopp);
+    fprintf(stdout, "[ERROR]: line:%d, number of opperands is incorrect: \"%s\", number of opperands should be %d\n", line, command, numOfopp);
     return -1;
 }
 
@@ -366,7 +366,7 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, 
             else
                 dest = 0;
             if(dest == -1){
-                fprintf(stderr, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
+                fprintf(stdout, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
                 return 0;
             }
             createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (unsigned int)pow(2, getOpcode(command)));
@@ -388,7 +388,7 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, 
             else
                 src = 0;
             if(src == -1){
-                fprintf(stderr, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
+                fprintf(stdout, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
                 return 0;
             }
             destPtr = va_arg(valist, char *);
@@ -400,7 +400,7 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, 
             else
                 dest = 0;
             if(dest == -1){
-                fprintf(stderr, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
+                fprintf(stdout, "[ERROR]: line:%d, register is invalid, command: \"%s\"\n", linesCounter, command);
                 return 0;
             }
             createBinaryLine(lines+(linesWritten++), 2, MACHINE_CODE_A, (int)pow(2, getOpcode(command)));
