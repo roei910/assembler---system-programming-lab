@@ -6,13 +6,6 @@
  */
 #include "assembler.h"
 
-/**
- * @brief main function, checks if the function received arguments
- * 
- * @param argc 
- * @param argv 
- * @return int 
- */
 int main(int argc, char **argv){
     if(argc == 1)
         printf("[Error]: no input files\n");
@@ -21,12 +14,6 @@ int main(int argc, char **argv){
     return 0;
 }
 
-/**
- * @brief start to run assembler program for each file received
- * 
- * @param argc 
- * @param argv 
- */
 void startAssembler(int argc, char **argv){
     int i;
     for(i = 1; i < argc; i++){
@@ -37,11 +24,6 @@ void startAssembler(int argc, char **argv){
     }
 }
 
-/**
- * @brief run assembler for a file name, returns true for successfull run
- * 
- * @param fileName the file to be assembled
- */
 int runProgram(char *fileName){
     FILE *fp;
     symbol *symbolTable = (symbol *)calloc(MAX_SYMBOLS, sizeof(symbol));
@@ -84,11 +66,6 @@ int runProgram(char *fileName){
     return error;
 }
 
-/**
- * @brief run the file through preAssembler program, return true if the preAssembler was successfull
- * 
- * @param fileName the file name to be run preAssembler
- */
 int preAssembler(char *fileName){
     int error = 1;
     FILE *fp;
@@ -109,16 +86,6 @@ int preAssembler(char *fileName){
     return error;
 }
 
-/**
- * @brief build the output files after first and second run was successfull
- * 
- * @param fileName file name to be created
- * @param lines binary lines read from files
- * @param symbolTable symbol table from the file
- * @param symbolTableSize size of symbol table
- * @param ICF instruction count of the read file
- * @param DCF data count of the read file
- */
 int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int symbolTableSize, int ICF, int DCF){
     /*create object file, .ob*/
     FILE *fp;
@@ -156,13 +123,6 @@ int buildOutPutFiles(char *fileName, BinaryLine *lines, symbol *symbolTable, int
     return error;
 }
 
-/**
- * @brief print an entry symbols according to the instructions
- * 
- * @param fp file to be written to
- * @param symbolTable symbols read from the file
- * @param symbolTableSize size of symbol table array
- */
 void printSymbolEntry(FILE *fp, symbol *symbolTable, int symbolTableSize){
     int i;
     for(i = 0 ; i < symbolTableSize ; i++){

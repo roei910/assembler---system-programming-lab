@@ -9,11 +9,11 @@
 /**
  * @brief the function will start second run, will return FALSE if found errors
  * 
- * @param fp 
- * @param extFp 
- * @param symbolTable 
- * @param lines 
- * @param tableSize 
+ * @param fp FILE pointer to the assembly file after macro
+ * @param extFileName name of .ext file 
+ * @param symbolTable symbol table
+ * @param lines binary lines for the file read
+ * @param tableSize size of symbol table
  * @return int 
  */
 int startSecondRun(FILE *, char *, symbol *, BinaryLine *, int);
@@ -21,20 +21,20 @@ int startSecondRun(FILE *, char *, symbol *, BinaryLine *, int);
 /**
  * @brief adds an attribute to the symbol from symbol table array
  * 
- * @param linesCounter 
- * @param table 
- * @param tableSize 
- * @param symbolName 
- * @param attr 
- * @return int 
+ * @param linesCounter number of line for errors
+ * @param table symbol table
+ * @param tableSize size of symbol table
+ * @param symbolName symbol to add an attribute
+ * @param attr attribute to add
+ * @return int True for successfull, False for fail in adding attribute
  */
 int addAttribute(int, symbol *, int, char *, char *);
 
 /**
  * @brief extracts the symbol from the entry line to tempsymbol parameter
  * 
- * @param inputLine 
- * @param tempSymbol 
+ * @param inputLine input line from file
+ * @param tempSymbol destination for symbol
  * @return int 
  */
 int extractSymbolFromEntryLine(char *, char *);
@@ -42,21 +42,21 @@ int extractSymbolFromEntryLine(char *, char *);
 /**
  * @brief Get the Symbol From an Opperand to the tempsymbol
  * 
- * @param opperand 
- * @param tempSymbol 
+ * @param opperand the opperand to be read
+ * @param tempSymbol destination for symbol
  */
 void getSymbolFromOpperand(char *, char *);
 
 /**
  * @brief build the symbol lines to the binline array
  * 
- * @param linesCounter 
- * @param fp 
- * @param lines 
- * @param symbolTable 
- * @param tableSize 
- * @param opperand 
- * @param IC 
+ * @param linesCounter current line to be read from file after macro
+ * @param fp FILE pointer to .ext file
+ * @param lines binary lines
+ * @param symbolTable symbol table
+ * @param tableSize size of symbol table
+ * @param opperand the opperand in the symbol line
+ * @param IC instruction count for the assembly file
  * @return int 
  */
 int buildSymbolLines(int, FILE **, char *, BinaryLine *, symbol *, int , char *, int);
@@ -64,9 +64,9 @@ int buildSymbolLines(int, FILE **, char *, BinaryLine *, symbol *, int , char *,
 /**
  * @brief prints the use of a symbol to the ext file
  * 
- * @param fp 
- * @param extSymbol 
- * @param baseAddress 
+ * @param fp FILE pointer to the ext file
+ * @param extSymbol the symbol to be printed to file
+ * @param baseAddress base address for symbol use in assembly file
  */
 void printSymbolExternal(FILE *, symbol *, int);
 

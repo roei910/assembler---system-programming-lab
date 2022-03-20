@@ -47,14 +47,14 @@
 /**
  * @brief decode a single line from the file and return a number of lines to be added to the file
  * 
- * @param line 
- * @param inputLine 
- * @param command 
- * @param src 
- * @param dest 
- * @param srcAddressing 
- * @param destAddressing 
- * @param numberOfOpperands 
+ * @param line current line from file for errors
+ * @param inputLine the input line to be decode
+ * @param command destination for command name
+ * @param src destination for source opperand
+ * @param dest destination for destination opperand
+ * @param srcAddressing destination for type of addressing for source
+ * @param destAddressing destination for type of addressing for destination
+ * @param numberOfOpperands destination for number of opperands for command name
  * @return int number of lines to be written
  */
 int lineDecode(int, char *, char *, char *, char *, int *, int *, int *);
@@ -62,10 +62,10 @@ int lineDecode(int, char *, char *, char *, char *, int *, int *, int *);
 /**
  * @brief return the number of opperands in a single input line
  * 
- * @param inputLine 
- * @param command 
- * @param src 
- * @param dest 
+ * @param inputLine input line to be decoded
+ * @param command destination for command name
+ * @param src destination for source opperand
+ * @param dest destination for destination opperand
  * @param line number of line for error output
  * @return int number of opperands
  */
@@ -79,7 +79,7 @@ int decodeInstructionLine(char *, char *, char *, char *, int);
  * 3 - symbol
  * -1 - invalid
  * 
- * @param opperand 
+ * @param opperand the opperand to be checked
  * @return int 
  */
 int checkOpperandType(char *);
@@ -87,7 +87,7 @@ int checkOpperandType(char *);
 /**
  * @brief return true if an opperand is a number
  * 
- * @param opperand 
+ * @param opperand the opperand to be checked
  * @return int 
  */
 int isNumber(char *);
@@ -95,7 +95,7 @@ int isNumber(char *);
 /**
  * @brief returns true if an opperand is a register without checking if the register number is valid (0 to 15)
  * 
- * @param opperand 
+ * @param opperand the opperand to be checked
  * @return int 
  */
 int isRegister(char *);
@@ -103,7 +103,7 @@ int isRegister(char *);
 /**
  * @brief returns true if an opperand is a symbol and register
  * 
- * @param opperand 
+ * @param opperand the opperand to be checked
  * @return int 
  */
 int isIndexOpperand(char *);
@@ -111,7 +111,7 @@ int isIndexOpperand(char *);
 /**
  * @brief Get the Number Of Opperands from a command name, returns -1 for wrong command name
  * 
- * @param operation 
+ * @param command the command name to be checked
  * @return int 
  */
 int getNumberOfOpperands(char *);
@@ -119,21 +119,21 @@ int getNumberOfOpperands(char *);
 /**
  * @brief checks if a command with two opperands is valid
  * 
- * @param command 
- * @param src 
- * @param srcAddressing 
- * @param dest 
- * @param destAddressing 
- * @return int 
+ * @param command command name
+ * @param src source opperand
+ * @param srcAddressing destination for source addressing
+ * @param dest destination opperand
+ * @param destAddressing destination for destination addressing
+ * @return int 0 - FALSE
  */
 int checkValidCommandTwoOpperands(char *, char *, int *, char *, int *);
 
 /**
  * @brief checks if a command with one opperand is valid
  * 
- * @param command 
- * @param dest 
- * @param destAddressing 
+ * @param command comamnd name
+ * @param dest destination opperand
+ * @param destAddressing destination for destination addressing
  * @return int 
  */
 int checkValidCommandOneOpperand(char *, char *, int *);
@@ -141,28 +141,28 @@ int checkValidCommandOneOpperand(char *, char *, int *);
 /**
  * @brief Get the Funct of a command name
  * 
- * @param command 
- * @return int 
+ * @param command command name to be checked
+ * @return int FUNCT of command
  */
 int getFunct(char *);
 
 /**
  * @brief Get the Opcode of a command name
  * 
- * @param command 
- * @return int 
+ * @param command command name to be checked
+ * @return int OPCODE of command
  */
 int getOpcode(char *);
 
 /**
  * @brief creates binary lines according to the type of command, a symbol line doesnt get a value
  * 
- * @param linesCounter 
- * @param lines 
- * @param symbolCount 
- * @param symbolTable 
- * @param command 
- * @param arguments 
+ * @param linesCounter number of line in file for errors
+ * @param lines binary lines
+ * @param symbolCount symbol table size
+ * @param symbolTable symbol table
+ * @param command name of command
+ * @param arguments number of arguments
  * @param ... 
  * @return int 
  */
@@ -171,7 +171,7 @@ int buildMachineCodeLines(int, BinaryLine *, int, symbol *, char *, int, ...);
 /**
  * @brief Get the Number From an Opperand
  * 
- * @param opperand 
+ * @param opperand the opperand to be checked
  * @return int 
  */
 int getNumberFromOpperand(char *);
@@ -179,7 +179,7 @@ int getNumberFromOpperand(char *);
 /**
  * @brief Get the Reg From an opperand
  * 
- * @param opperand 
+ * @param opperand the opperand to be checked
  * @return int 
  */
 int getRegFromOpperand(char *);
@@ -187,7 +187,7 @@ int getRegFromOpperand(char *);
 /**
  * @brief checks if a symbol is valid (alpha numeric characters only)
  * 
- * @param symbol 
+ * @param symbol thr symbol to be checked
  * @return int 
  */
 int checkValidSymbol(char *);
@@ -195,7 +195,7 @@ int checkValidSymbol(char *);
 /**
  * @brief returns true if an inputline is a symbol decleration
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int isSymbolDecleration(char *);
@@ -203,7 +203,7 @@ int isSymbolDecleration(char *);
 /**
  * @brief returns true if an inputline is a data decleration
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int isDataDecleration(char *);
@@ -211,7 +211,7 @@ int isDataDecleration(char *);
 /**
  * @brief returns true if an inputline is an extern decleration
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int isExternDecleration(char *);
@@ -219,7 +219,7 @@ int isExternDecleration(char *);
 /**
  * @brief skip a symbol in the beggining of an inputline
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int skipSymbol(char *);
@@ -227,8 +227,8 @@ int skipSymbol(char *);
 /**
  * @brief checks if a decleration string is in the inputline
  * 
- * @param inputLine 
- * @param decleration 
+ * @param inputLine inputline to be checked
+ * @param decleration type of decleration to be in inputline
  * @return int 
  */
 int checkDecleration(char *, char *);
@@ -236,9 +236,9 @@ int checkDecleration(char *, char *);
 /**
  * @brief returns true if a symbol is in the symbol table
  * 
- * @param table 
- * @param tableSize 
- * @param symbolName 
+ * @param table symbole table
+ * @param tableSize size of symbol table
+ * @param symbolName name of symbol to be found
  * @return int 
  */
 int findSymbolInTable(symbol *, int, char *);
@@ -246,7 +246,7 @@ int findSymbolInTable(symbol *, int, char *);
 /**
  * @brief returns true if an inputline is an empty line
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int isEmptyLine(char *);
@@ -254,7 +254,7 @@ int isEmptyLine(char *);
 /**
  * @brief returns true if a line is a comment line
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int isCommentLine(char *);
@@ -262,7 +262,7 @@ int isCommentLine(char *);
 /**
  * @brief returns true if an inputline is an entry decleration line
  * 
- * @param inputLine 
+ * @param inputLine inputline to be checked
  * @return int 
  */
 int isEntryDecleration(char *);

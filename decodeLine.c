@@ -5,19 +5,6 @@
  */
 #include "decodeLine.h"
 
-/**
- * @brief decode a single line from the file and return a number of lines to be added to the file
- * 
- * @param line 
- * @param inputLine 
- * @param command 
- * @param src 
- * @param dest 
- * @param srcAddressing 
- * @param destAddressing 
- * @param numberOfOpperands 
- * @return int number of lines to be written
- */
 int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
     int valid, linesAdded = 0;
     *numberOfOpperands = decodeInstructionLine(inputLine, command, src, dest, line);
@@ -65,15 +52,6 @@ int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, 
     return 0;
 }
 
-/**
- * @brief return the number of opperands in a single input line
- * 
- * @param inputLine 
- * @param command 
- * @param src 
- * @param dest 
- * @return int number of opperands
- */
 int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest, int line){
     char opperands[2*MAX_OPPERAND_LENGTH], *ptr, inputLineCpy[MAX_LINE], tempC;
     int countOpp, numOfopp, flag = 0;
@@ -128,17 +106,6 @@ int decodeInstructionLine(char *inputLine, char *command, char *src, char *dest,
     return -1;
 }
 
-/**
- * @brief check the opperand type of a given opperand
- * 0 - number
- * 1 - symbol and register
- * 2 - register
- * 3 - symbol
- * -1 - invalid
- * 
- * @param opperand 
- * @return int 
- */
 int checkOpperandType(char *opperand){
     char *ptr;
     if((ptr = strstr(opperand, HASHTAG_SYMBOL))){
@@ -156,23 +123,11 @@ int checkOpperandType(char *opperand){
     return -1;
 }
 
-/**
- * @brief return true if an opperand is a number
- * 
- * @param opperand 
- * @return int 
- */
 int isNumber(char *opperand){
     int num;
     return sscanf(opperand, "%d", &num);
 }
 
-/**
- * @brief returns true if an opperand is a register without checking if the register number is valid (0 to 15)
- * 
- * @param opperand 
- * @return int 
- */
 int isRegister(char *opperand){
     char c;
     int num;
@@ -182,12 +137,6 @@ int isRegister(char *opperand){
     return 0;
 }
 
-/**
- * @brief returns true if an opperand is a symbol and register
- * 
- * @param opperand 
- * @return int 
- */
 int isIndexOpperand(char *opperand){
     char *ptr;
     char reg[MAX_NAME], label[MAX_LABEL_LENGTH], cpyOpperand[MAX_OPPERAND_LENGTH];
@@ -206,41 +155,25 @@ int isIndexOpperand(char *opperand){
     return 0;
 }
 
-/**
- * @brief Get the Number Of Opperands from a command name, returns -1 for wrong command name
- * 
- * @param operation 
- * @return int 
- */
-int getNumberOfOpperands(char *operation){
-    if((!strcmp(operation, COMMAND_MOV)) || (!strcmp(operation, COMMAND_CMP)) ||
-        (!strcmp(operation, COMMAND_ADD)) || (!strcmp(operation, COMMAND_SUB)) ||
-        (!strcmp(operation, COMMAND_LEA))){
+int getNumberOfOpperands(char *command){
+    if((!strcmp(command, COMMAND_MOV)) || (!strcmp(command, COMMAND_CMP)) ||
+        (!strcmp(command, COMMAND_ADD)) || (!strcmp(command, COMMAND_SUB)) ||
+        (!strcmp(command, COMMAND_LEA))){
         return 2;
     }
-    else if((!strcmp(operation, COMMAND_CLR)) || (!strcmp(operation, COMMAND_NOT)) ||
-        (!strcmp(operation, COMMAND_INC)) || !strcmp(operation, COMMAND_DEC) ||
-        (!strcmp(operation, COMMAND_JMP)) || (!strcmp(operation, COMMAND_BNE)) ||
-        (!strcmp(operation, COMMAND_JSR)) || (!strcmp(operation, COMMAND_RED)) ||
-        (!strcmp(operation, COMMAND_PRN))){
+    else if((!strcmp(command, COMMAND_CLR)) || (!strcmp(command, COMMAND_NOT)) ||
+        (!strcmp(command, COMMAND_INC)) || !strcmp(command, COMMAND_DEC) ||
+        (!strcmp(command, COMMAND_JMP)) || (!strcmp(command, COMMAND_BNE)) ||
+        (!strcmp(command, COMMAND_JSR)) || (!strcmp(command, COMMAND_RED)) ||
+        (!strcmp(command, COMMAND_PRN))){
         return 1;
     }
-    else if((!strcmp(operation, COMMAND_RTS)) || (!strcmp(operation, COMMAND_STOP))){
+    else if((!strcmp(command, COMMAND_RTS)) || (!strcmp(command, COMMAND_STOP))){
         return 0;
     }
     return -1;/*invalid command*/
 }
 
-/**
- * @brief checks if a command with two opperands is valid
- * 
- * @param command 
- * @param src 
- * @param srcAddressing 
- * @param dest 
- * @param destAddressing 
- * @return int 
- */
 int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, char *dest, int *destAddressing){
     int valid = 0;
     *destAddressing = checkOpperandType(dest);
@@ -256,14 +189,6 @@ int checkValidCommandTwoOpperands(char *command, char *src, int *srcAddressing, 
     return valid;
 }
 
-/**
- * @brief checks if a command with one opperand is valid
- * 
- * @param command 
- * @param dest 
- * @param destAddressing 
- * @return int 
- */
 int checkValidCommandOneOpperand(char *command, char *dest, int *destAddressing){
     *destAddressing = checkOpperandType(dest);
     if(*destAddressing == 0){
@@ -282,12 +207,6 @@ int checkValidCommandOneOpperand(char *command, char *dest, int *destAddressing)
     return 1;
 }
 
-/**
- * @brief Get the Funct of a command name
- * 
- * @param command 
- * @return int 
- */
 int getFunct(char *command){
     if((!strcmp(command, COMMAND_ADD)) || (!strcmp(command, COMMAND_CLR)) ||
         (!strcmp(command, COMMAND_JMP)))
@@ -302,12 +221,6 @@ int getFunct(char *command){
     return 0;
 }
 
-/**
- * @brief Get the Opcode of a command name
- * 
- * @param command 
- * @return int 
- */
 int getOpcode(char *command){
     if(!strcmp(command, COMMAND_MOV))
         return 0;
@@ -334,18 +247,6 @@ int getOpcode(char *command){
     return -1;
 }
 
-/**
- * @brief creates binary lines according to the type of command, a symbol line doesnt get a value
- * 
- * @param linesCounter 
- * @param lines 
- * @param symbolCount 
- * @param symbolTable 
- * @param command 
- * @param arguments 
- * @param ... 
- * @return int 
- */
 int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, symbol *symbolTable, char *command, int arguments, ...){
     int dest, destAddressing, src, srcAddressing, linesWritten = 0;
     char *destPtr, *srcPtr;
@@ -422,12 +323,6 @@ int buildMachineCodeLines(int linesCounter, BinaryLine *lines, int symbolCount, 
     return 0;
 }
 
-/**
- * @brief Get the Number From an Opperand
- * 
- * @param opperand 
- * @return int 
- */
 int getNumberFromOpperand(char *opperand){
     int number=0;
     if(sscanf(opperand+1, "%d", &number) == 0) 
@@ -435,12 +330,6 @@ int getNumberFromOpperand(char *opperand){
     return number;
 }
 
-/**
- * @brief Get the Reg From an opperand
- * 
- * @param opperand 
- * @return int 
- */
 int getRegFromOpperand(char *opperand){
     char *ptr;
     int reg;
@@ -453,12 +342,6 @@ int getRegFromOpperand(char *opperand){
     return -1;
 }
 
-/**
- * @brief checks if a symbol is valid (alpha numeric characters only)
- * 
- * @param symbol 
- * @return int 
- */
 int checkValidSymbol(char *symbol){
     int countAlpha = 0;
     if(getRegFromOpperand(symbol) != -1)
@@ -477,12 +360,6 @@ int checkValidSymbol(char *symbol){
     return 1;
 }
 
-/**
- * @brief returns true if an inputline is a symbol decleration
- * 
- * @param inputLine 
- * @return int 
- */
 int isSymbolDecleration(char *inputLine){
     char *cPointer;
     if((cPointer = strstr(inputLine, LABEL_SYMBOL)) != NULL)
@@ -490,12 +367,6 @@ int isSymbolDecleration(char *inputLine){
     return 0;
 }
 
-/**
- * @brief returns true if an inputline is a data decleration
- * 
- * @param inputLine 
- * @return int 
- */
 int isDataDecleration(char *inputLine){
     if(checkDecleration(inputLine, DATA_DECLERATION))
         return 1;
@@ -504,24 +375,12 @@ int isDataDecleration(char *inputLine){
     return 0;
 }
 
-/**
- * @brief returns true if an inputline is an extern decleration
- * 
- * @param inputLine 
- * @return int 
- */
 int isExternDecleration(char *inputLine){
     if(checkDecleration(inputLine, EXTERN_DECLERATION))
         return 1;
     return 0;
 }
 
-/**
- * @brief skip a symbol in the beggining of an inputline
- * 
- * @param inputLine 
- * @return int 
- */
 int skipSymbol(char *inputLine){
     char *ptr;
     if((ptr = strstr(inputLine, LABEL_SYMBOL))){
@@ -537,27 +396,12 @@ int skipSymbol(char *inputLine){
     return 0;
 }
 
-/**
- * @brief checks if a decleration string is in the inputline
- * 
- * @param inputLine 
- * @param decleration 
- * @return int 
- */
 int checkDecleration(char *inputLine, char *decleration){
     if(strstr(inputLine, decleration) != NULL)
         return 1;
     return 0;
 }
 
-/**
- * @brief returns true if a symbol is in the symbol table
- * 
- * @param table 
- * @param tableSize 
- * @param symbolName 
- * @return int 
- */
 int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
     int i;
     for(i = 0 ; i < tableSize ; i++)
@@ -566,33 +410,15 @@ int findSymbolInTable(symbol *table, int tableSize, char *symbolName){
     return -1;
 }
 
-/**
- * @brief returns true if an inputline is an empty line
- * 
- * @param inputLine 
- * @return int 
- */
 int isEmptyLine(char *inputLine){
     char tempString[MAX_LINE];
     return (sscanf(inputLine, "%s\n", tempString) == -1);
 }
 
-/**
- * @brief returns true if a line is a comment line
- * 
- * @param inputLine 
- * @return int 
- */
 int isCommentLine(char *inputLine){
     return strstr(inputLine, COMMENT_LINE_STRING) != NULL;
 }
 
-/**
- * @brief returns true if an inputline is an entry decleration line
- * 
- * @param inputLine 
- * @return int 
- */
 int isEntryDecleration(char *inputLine){
     if(checkDecleration(inputLine, ENTRY_DECLERATION))
         return 1;

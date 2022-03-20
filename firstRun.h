@@ -12,12 +12,12 @@
 /**
  * @brief start a first run of a file fp, returns FALSE if the run was successfull
  * 
- * @param fp 
- * @param symbolTable 
- * @param lines 
- * @param ICF 
- * @param DCF 
- * @param tableSize 
+ * @param fp FILE pointer to be read after macro
+ * @param symbolTable symbol table
+ * @param lines binary lines of assembly line
+ * @param ICF instruction lines in assembly file
+ * @param DCF data lines in assembly file
+ * @param tableSize size of symbol table
  * @return int 
  */
 int startFirstRun(FILE *, symbol *, BinaryLine *, int *, int *, int *);
@@ -25,7 +25,7 @@ int startFirstRun(FILE *, symbol *, BinaryLine *, int *, int *, int *);
 /**
  * @brief returns true if an inputline contains .string
  * 
- * @param inputLine 
+ * @param inputLine input line to check
  * @return int 
  */
 int isStringLine(char *);
@@ -33,20 +33,20 @@ int isStringLine(char *);
 /**
  * @brief Creates a Symbol in the symbol table
  * 
- * @param table 
- * @param index 
- * @param symbolName 
- * @param attr 
- * @param base 
- * @param offset 
+ * @param table symbol table
+ * @param index current last index
+ * @param symbolName name of symbol to create
+ * @param attr attribute for symbol
+ * @param base base address for symbol
+ * @param offset offset from base address for symbol
  */
 void createSymbol(symbol *, int, char *, char *, int, int);
 
 /**
  * @brief creates .string and .data binary lines, returns the amount of lines created
  * 
- * @param inputLine 
- * @param lines 
+ * @param inputLine input line to be checked
+ * @param lines binary lines to be created
  * @param line number of line currently read for errors
  * @return int 
  */
@@ -55,16 +55,16 @@ int extractDataFromLine(char *, BinaryLine *, int line);
 /**
  * @brief build machine code lines to binLine array according to command type
  * 
- * @param linesCounter 
- * @param numberOfOpperands 
- * @param lines 
- * @param symbolTable 
- * @param symbolCount 
- * @param command 
- * @param src 
- * @param srcAddressing 
- * @param dest 
- * @param destAddressing 
+ * @param linesCounter current line of assembly file
+ * @param numberOfOpperands number of opperands for the current command name
+ * @param lines binary lines
+ * @param symbolTable symbol table
+ * @param symbolCount symbol table size
+ * @param command command name
+ * @param src source opperand
+ * @param srcAddressing type of addressing for source
+ * @param dest destination opperand
+ * @param destAddressing type of addressing for destination
  * @return int 
  */
 int buildCodeLines(int, int, BinaryLine *, symbol *, int, char *, char *, int, char *, int);
@@ -72,8 +72,8 @@ int buildCodeLines(int, int, BinaryLine *, symbol *, int, char *, char *, int, c
 /**
  * @brief extracts a symbol from inputline and copies the symbol to symbol parameter
  * 
- * @param inputLine 
- * @param symbol 
+ * @param inputLine input line to extract symbol from
+ * @param symbol destination for symbol
  */
 void extractSymbol(char *, char *);
 
