@@ -9,8 +9,8 @@
 /**
  * @brief start to run assembler program for each file received
  * 
- * @param argc 
- * @param argv 
+ * @param argc argument count for assembler
+ * @param argv arguments strings
  */
 void startAssembler(int, char **);
 

@@ -1,3 +1,9 @@
+/**
+ * @file firstRun.c
+ * @author roei daniel
+ * @brief functions for first run, decode lines and create instruction lines
+ * 
+ */
 #include "firstRun.h"
 
 /**
@@ -36,7 +42,7 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
                     error = 0;
                 }
             }
-            /*7 - add data as bin lines, add DC count according to lines created*/
+            /* add data as bin lines, add DC count according to lines created*/
             addedLines = extractDataFromLine(inputLine, lines+IC-100, fileLines);
             if(addedLines == 0)
                 error = 0;
@@ -71,7 +77,7 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
                 error = 0;
             }
         }
-        else if((!isEmptyLine(inputLine)) && (!isCommentLine(inputLine))){/*11 - normal code line*/
+        else if((!isEmptyLine(inputLine)) && (!isCommentLine(inputLine))){/*normal code line*/
             if(symbolDecleration){
                 extractSymbol(inputLine, tempSymbol);
                 if(!checkValidSymbol(tempSymbol)){
