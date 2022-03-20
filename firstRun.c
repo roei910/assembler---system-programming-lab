@@ -93,7 +93,7 @@ int startFirstRun(FILE *fp, symbol *symbolTable, BinaryLine *lines, int *ICF, in
             else if(!buildCodeLines(fileLines, numberOfOpperands, lines+IC-100, symbolTable, symbolCount, command, src, srcAddressing,dest, destAddressing)){
                 error = 0;
             }
-            IC += addedLines;
+            IC += addedLines;            
         }
     }
     *ICF = IC;
@@ -140,7 +140,7 @@ void createSymbol(symbol *table, int index, char *symbolName, char *attr ,int ba
  * @return int 
  */
 int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
-    int tempNumber, countLines = 0;
+    int tempNumber, countLines = 0, flag = 0;
     char tempC;
     char *ptr, tempLine[MAX_LINE];
     if(isStringLine(inputLine)){/*.string*/
@@ -167,15 +167,24 @@ int extractDataFromLine(char *inputLine, BinaryLine *lines, int line){
     }
     else{/*.data*/
         strcpy(tempLine, strstr(inputLine, DATA_DECLERATION) + 5);
-        ptr = strtok(tempLine, COMMA_SYMBOL);
-        sscanf(ptr, " %c", &tempC);
-        /*if((!isalnum(tempC))){
-            fprintf(stderr, "[ERROR]: line:%d, XXdata incorrect / missing\n", line);
+        if(isEmptyLine(tempLine)){
+            fprintf(stderr, "[ERROR]: line:%d, data missing\n", line);
             return 0;
-        }*/
+        }
+        ptr = strtok(tempLine, COMMA_SYMBOL);
+        flag = sscanf(ptr, " %c", &tempC);
+        if(flag == -1){
+            fprintf(stderr, "[ERROR]: line:%d, illegal comma in data line\n", line);
+            return 0;
+        }
         while(ptr){
-            if(sscanf(ptr, "%d", &tempNumber) == 0){
-                fprintf(stderr, "[ERROR]: line:%d, data incorrect / missing\n", line);
+            flag = sscanf(ptr, "%d", &tempNumber);
+            if(flag == 0){
+                fprintf(stderr, "[ERROR]: line:%d, incorrect data\n", line);
+                return 0;
+            }
+            else if(flag == -1){
+                fprintf(stderr, "[ERROR]: line:%d, illegal comma in data line\n", line);
                 return 0;
             }
             ptr = strtok(NULL, COMMA_SYMBOL);
