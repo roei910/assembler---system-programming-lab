@@ -31,16 +31,16 @@ void startAssembler(int argc, char **argv){
     int i;
     for(i = 1; i < argc; i++){
         if(!runProgram(*(argv+i)))/*run each file name through assembler*/
-            fprintf(stdout, "[Assembler Error]: found error/s while compiling file \"%s\"\n\n", *(argv+i));
+            fprintf(stdout, "[Assembler Error]: found error/s in file \"%s\"\n\n", *(argv+i));
         else
-            fprintf(stdout, "[Assembler]: file \"%s\" was compiled successfully\n\n", *(argv+i));
+            fprintf(stdout, "[Assembler]: file \"%s\" was successfully\n\n", *(argv+i));
     }
 }
 
 /**
  * @brief run assembler for a file name, returns true for successfull run
  * 
- * @param fileName the file to be compiled
+ * @param fileName the file to be assembled
  */
 int runProgram(char *fileName){
     FILE *fp;
