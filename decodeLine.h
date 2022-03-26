@@ -1,6 +1,9 @@
 #if !defined(DECODE_LINE_HEADER)
 #define DECODE_LINE_HEADER
 
+#include "symbol.h"
+#include "binaryLine.h"
+
 #define MAX_OPPERAND_LENGTH 30
 #define MAX_COMMAND_NAME_LENGTH 20
 #define MAX_VARIABLE_NAME_LENGTH 20

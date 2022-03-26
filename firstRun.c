@@ -3,9 +3,7 @@
 #include <string.h>
 #include "constants.h"
 #include "decodeLine.h"
-#include "symbol.h"
 #include "firstRun.h"
-#include "binaryLine.h"
 
 /**
  * @file firstRun.c

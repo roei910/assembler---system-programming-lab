@@ -4,8 +4,6 @@
 #include <stdarg.h>
 #include <math.h>
 #include "constants.h"
-#include "binaryLine.h"
-#include "symbol.h"
 #include "decodeLine.h"
 
 /**

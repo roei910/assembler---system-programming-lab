@@ -1,6 +1,9 @@
 #if !defined(FIRST_RUN_HEADER)
 #define FIRST_RUN_HEADER
 
+#include "binaryLine.h"
+#include "symbol.h"
+
 #define QUOTATION_SYMBOL_CHAR '"'
 
 /**

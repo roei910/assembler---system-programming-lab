@@ -1,6 +1,8 @@
 #if !defined(PRE_ASSEMBLER_HEADER)
 #define PRE_ASSEMBLER_HEADER
 
+#include "macroNode.h"
+
 /**
  * @brief starts to replace all macro on file fp
  * 

@@ -1,6 +1,8 @@
 #if !defined(ASSEMBLER_HEADER)
 #define ASSEMBLER_HEADER
 
+#include "binaryLine.h"
+
 #define NEW_LINE_FOR_PRINT "********************************************\n"
 /**
  * @brief start to run assembler program for each file received

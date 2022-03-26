@@ -1,9 +1,10 @@
+#include <string.h>
 #include <stdio.h>
 #include "decodeLine.h"
 #include "binaryLine.h"
 #include "constants.h"
-#include "symbol.h"
 #include "secondRun.h"
+#include "symbol.h"
 
 /**
  * @file secondRun.c

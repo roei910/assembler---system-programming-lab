@@ -1,9 +1,12 @@
+#include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include "preAssembler.h"
 #include "firstRun.h"
 #include "secondRun.h"
 #include "symbol.h"
 #include "assembler.h"
+#include "constants.h"
 
 /**
  * @file assembler.c
