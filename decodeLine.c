@@ -1,9 +1,18 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdarg.h>
+#include <math.h>
+#include "constants.h"
+#include "binaryLine.h"
+#include "symbol.h"
+#include "decodeLine.h"
+
 /**
  * @file decodeLine.c
  * @author roei daniel
  * @brief the file will help with line decoding for first and second run
  */
-#include "decodeLine.h"
 
 int lineDecode(int line, char *inputLine, char *command, char *src, char *dest, int *srcAddressing, int *destAddressing, int *numberOfOpperands){
     int valid, linesAdded = 0;

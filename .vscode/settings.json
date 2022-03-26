@@ -4,6 +4,7 @@
         "compiler.h": "c",
         "stdio.h": "c",
         "stdlib.h": "c",
-        "secondrun.h": "c"
+        "secondrun.h": "c",
+        "constants.h": "c"
     }
 }

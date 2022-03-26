@@ -1,4 +1,7 @@
 #include "symbol.h"
+#include "constants.h"
+#include <string.h>
+#include <stdlib.h>
 
 struct symbol{/*represents a row in the symbol table*/
     char symbolName[MAX_SYMBOL_LENGTH];

@@ -1,12 +1,6 @@
 #if !defined(BINARY_LINE_HEADER)
 #define BINARY_LINE_HEADER
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdarg.h>
-#include "constants.h"
-
 /**
  * @brief binary Line struct contains the binary code for a line 
  */

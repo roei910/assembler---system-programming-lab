@@ -1,10 +1,6 @@
 #if !defined(SYMBOL_HEADER)
 #define SYMBOL_HEADER
 
-#include "constants.h"
-#include <string.h>
-#include <stdlib.h>
-
 /**
  * @brief definition of symbol object
  * symbol object includes:

@@ -1,10 +1,16 @@
+#include <stdio.h>
+#include "preAssembler.h"
+#include "firstRun.h"
+#include "secondRun.h"
+#include "symbol.h"
+#include "assembler.h"
+
 /**
  * @file assembler.c
  * @author roei daniel
  * @brief the file will handle a single .as file and run the assembler program
  * will create files according to the lines read
  */
-#include "assembler.h"
 
 int main(int argc, char **argv){
     if(argc == 1)

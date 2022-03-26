@@ -1,11 +1,6 @@
 #if !defined(MACRO_NODE_HEADER)
 #define MACRO_NODE_HEADER
 
-#include "constants.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #define MAX_MACRO_NAME 20
 #define MAX_MACRO_LENGTH 6 /*max lines for a macro decleration*/
 

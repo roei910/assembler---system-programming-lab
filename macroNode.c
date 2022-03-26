@@ -1,4 +1,8 @@
 #include "macroNode.h"
+#include "constants.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct macroNode{
     char name[MAX_MACRO_NAME];

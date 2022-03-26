@@ -1,13 +1,6 @@
 #if !defined(FIRST_RUN_HEADER)
 #define FIRST_RUN_HEADER
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include "constants.h"
-#include "decodeLine.h"
-#include "symbol.h"
-
 #define QUOTATION_SYMBOL_CHAR '"'
 
 /**

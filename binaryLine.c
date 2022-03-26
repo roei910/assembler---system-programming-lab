@@ -1,11 +1,16 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdarg.h>
+#include "constants.h"
+#include "binaryLine.h"
+
 /**
  * @file binaryLine.c
  * @author roei daniel
  * @brief the file will be able to handle print and write binary words
  * to a file or a binLine object 
  */
-
-#include "binaryLine.h"
 
 struct binaryLine{
     union MachineCode{

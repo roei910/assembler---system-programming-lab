@@ -1,12 +1,6 @@
 #if !defined(SECOND_RUN_HEADER)
 #define SECOND_RUN_HEADER
 
-#include <stdio.h>
-#include "decodeLine.h"
-#include "binaryLine.h"
-#include "constants.h"
-#include "symbol.h"
-
 /**
  * @brief the function will start second run, will return FALSE if found errors
  * 

@@ -1,12 +1,6 @@
 #if !defined(PRE_ASSEMBLER_HEADER)
 #define PRE_ASSEMBLER_HEADER
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "constants.h"
-#include "macroNode.h"
-
 /**
  * @brief starts to replace all macro on file fp
  * 

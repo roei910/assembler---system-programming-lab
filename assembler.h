@@ -1,12 +1,6 @@
 #if !defined(ASSEMBLER_HEADER)
 #define ASSEMBLER_HEADER
 
-#include <stdio.h>
-#include "preAssembler.h"
-#include "firstRun.h"
-#include "secondRun.h"
-#include "symbol.h"
-
 #define NEW_LINE_FOR_PRINT "********************************************\n"
 /**
  * @brief start to run assembler program for each file received

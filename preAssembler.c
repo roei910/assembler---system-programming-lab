@@ -1,10 +1,16 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "constants.h"
+#include "macroNode.h"
+#include "preAssembler.h"
+
 /**
  * @file preAssembler.c
  * @author roei daniel
  * @brief preAssembler replace all macros in file, create a new file with .am extension 
  * @copyright Copyright (c) 2022
  */
-#include "preAssembler.h"
 
 int replaceAllMacro(FILE *fp, char *fileName){
     char lineBuffer[MAX_LINE], *cp, macroName[MAX_MACRO_NAME];

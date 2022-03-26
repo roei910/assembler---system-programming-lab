@@ -1,9 +1,15 @@
+#include <stdio.h>
+#include "decodeLine.h"
+#include "binaryLine.h"
+#include "constants.h"
+#include "symbol.h"
+#include "secondRun.h"
+
 /**
  * @file secondRun.c
  * @author roei daniel
  * @brief start the second run on a file
  */
-#include "secondRun.h"
 
 int startSecondRun(FILE *fp, char *extFileName, Symbol *symbolTable, BinaryLine *lines, int tableSize){
     char inputLine[MAX_LINE], tempSymbol[MAX_SYMBOL_LENGTH];

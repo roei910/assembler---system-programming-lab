@@ -1,15 +1,6 @@
 #if !defined(DECODE_LINE_HEADER)
 #define DECODE_LINE_HEADER
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <math.h>
-#include "constants.h"
-#include "binaryLine.h"
-#include "symbol.h"
-
 #define MAX_OPPERAND_LENGTH 30
 #define MAX_COMMAND_NAME_LENGTH 20
 #define MAX_VARIABLE_NAME_LENGTH 20

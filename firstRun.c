@@ -1,10 +1,18 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include "constants.h"
+#include "decodeLine.h"
+#include "symbol.h"
+#include "firstRun.h"
+#include "binaryLine.h"
+
 /**
  * @file firstRun.c
  * @author roei daniel
  * @brief functions for first run, decode lines and create instruction lines
  * 
  */
-#include "firstRun.h"
 
 int startFirstRun(FILE *fp, Symbol *symbolTable, BinaryLine *lines, int *ICF, int *DCF, int *tableSize){
     int IC = 100, DC = 0, symbolDecleration, symbolCount = 0, addedLines, error = 1, fileLines = 0;
